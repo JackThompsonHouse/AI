@@ -1,18 +1,19 @@
-# Thompsonhouse
+# Copium Squad
 
-Marketing website for **Thompsonhouse**, a managed IT services provider.
+A completely unsanctioned Apex Legends performance review for Mullet
+(professional grey-loot enthusiast) and Ben (solo push connoisseur).
 Static HTML/CSS/JS site, containerized with nginx for deployment on
 [Coolify](https://coolify.io).
 
 ## Structure
 
 ```
-index.html      Single-page site (hero, services, approach, why us, contact)
+index.html      Single-page site (hero, patch notes, case files, replay, stats, program, pledge)
 css/styles.css  Styles
-js/main.js      Mobile nav, scroll reveal, form UX
+js/main.js      Mobile nav, scroll reveal, pledge form
 assets/         SVG mark / favicon
 Dockerfile      nginx:alpine image serving the static files
-nginx.conf      nginx server config (gzip, cache headers, SPA fallback)
+nginx.conf      nginx server config (gzip, cache headers, IPv4 + IPv6 listeners)
 docker-compose.yml
 ```
 
@@ -44,17 +45,9 @@ docker compose up --build
 3. Coolify will detect the `Dockerfile` at the repo root — choose the
    **Dockerfile** build pack (or **Docker Compose**, pointing at
    `docker-compose.yml`).
-4. Set the exposed port to `80` (container listens on 80 via nginx).
+4. Set **Ports Exposes** to `80` (container listens on 80 via nginx) —
+   this must be exactly `80`, not left as Coolify's default `3000`.
 5. Attach your domain and deploy.
 
 Every push to the tracked branch can trigger an automatic redeploy if you
 enable Coolify's webhook/auto-deploy for this app.
-
-## Customize before launch
-
-- Replace the placeholder phone/email in `index.html` (`#contact` section)
-  with real contact details.
-- Swap the two sample client quotes for real testimonials.
-- Update the industries list in the "served" section if it doesn't match
-  your client base.
-- Replace `assets/mark.svg` if you have a different logo mark.

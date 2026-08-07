@@ -37,13 +37,16 @@ if ('IntersectionObserver' in window && revealEls.length) {
   revealEls.forEach((el) => el.classList.add('in-view'));
 }
 
-// Contact form: friendly confirmation before handing off to mailto
-const contactForm = document.getElementById('contactForm');
-const formNote = document.getElementById('formNote');
+// Pledge form: playful, purely client-side confirmation
+const pledgeForm = document.getElementById('pledgeForm');
+const pledgeNote = document.getElementById('pledgeNote');
 
-if (contactForm && formNote) {
-  contactForm.addEventListener('submit', () => {
-    formNote.textContent = 'Opening your email client to send this…';
+if (pledgeForm && pledgeNote) {
+  pledgeForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const name = document.getElementById('signature').value.trim() || 'Anonymous';
+    pledgeForm.reset();
+    pledgeNote.textContent = `Pledge recorded for ${name}. Days since last incident: 0.`;
   });
 }
 
