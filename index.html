@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Copium Squad — An Intervention for Mullet &amp; Ben</title>
-<meta name="description" content="A totally unsanctioned Apex Legends performance review for Mullet (professional grey-loot enthusiast) and Ben (solo push connoisseur).">
+<title>What Claude Code Actually Built Here</title>
+<meta name="description" content="A live, honest account of what Claude Code actually did while building, breaking, and fixing this exact site — real commits, a real production bug, a real fix, a real deployment.">
 <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -17,22 +17,24 @@
 
 <header class="site-header" id="top">
   <div class="wrap header-inner">
-    <a class="brand" href="#top" aria-label="Copium Squad home">
+    <a class="brand" href="#top" aria-label="Home">
       <svg class="brand-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-        <path d="M20 4L34 11V21C34 29 28 34.5 20 37C12 34.5 6 29 6 21V11L20 4Z" stroke="currentColor" stroke-width="2.25" stroke-linejoin="round"/>
-        <path d="M14 20L18 24L27 15" stroke="var(--blood)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="4" y="4" width="32" height="32" rx="6" stroke="currentColor" stroke-width="2.25"/>
+        <path d="M13 15L18 20L13 25" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M21 25H27" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>
       </svg>
-      <span class="brand-word">Copium Squad</span>
+      <span class="brand-word">claude-code<span class="brand-cursor">_</span></span>
     </a>
 
-    <nav class="main-nav" aria-label="Primary">
-      <a href="#casefiles">Case Files</a>
-      <a href="#replay">The Replay</a>
-      <a href="#stats">The Stats</a>
-      <a href="#program">The Program</a>
+    <nav class="tab-nav" aria-label="Sections">
+      <a href="#top" class="tab-link" data-section="top"><span class="tab-dot dot-html"></span>index.html</a>
+      <a href="#capabilities" class="tab-link" data-section="capabilities"><span class="tab-dot dot-md"></span>capabilities.md</a>
+      <a href="#history" class="tab-link" data-section="history"><span class="tab-dot dot-log"></span>history.log</a>
+      <a href="#fix" class="tab-link" data-section="fix"><span class="tab-dot dot-diff"></span>fix.diff</a>
+      <a href="#deploy" class="tab-link" data-section="deploy"><span class="tab-dot dot-sh"></span>deploy.sh</a>
     </nav>
 
-    <a class="btn btn-blood btn-small nav-cta" href="#pledge">Sign the Pledge</a>
+    <a class="btn btn-ghost btn-small nav-cta" href="https://github.com/JackThompsonHouse/AI" target="_blank" rel="noopener">View source</a>
 
     <button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="mobileNav" aria-label="Open menu">
       <span></span><span></span><span></span>
@@ -40,312 +42,210 @@
   </div>
 
   <nav class="mobile-nav" id="mobileNav" aria-label="Mobile">
-    <a href="#casefiles">Case Files</a>
-    <a href="#replay">The Replay</a>
-    <a href="#stats">The Stats</a>
-    <a href="#program">The Program</a>
-    <a class="btn btn-blood" href="#pledge">Sign the Pledge</a>
+    <a href="#capabilities">capabilities.md</a>
+    <a href="#history">history.log</a>
+    <a href="#fix">fix.diff</a>
+    <a href="#deploy">deploy.sh</a>
+    <a class="btn btn-ghost" href="https://github.com/JackThompsonHouse/AI" target="_blank" rel="noopener">View source</a>
   </nav>
 </header>
 
 <main id="main">
 
   <!-- HERO -->
-  <section class="hero">
+  <section class="hero" id="hero">
     <div class="wrap hero-inner">
-      <p class="eyebrow reveal">An Unsanctioned Performance Review</p>
+      <p class="eyebrow reveal"># a live demonstration, not a sales pitch</p>
 
-      <div class="elim-banner reveal">
-        <span class="elim-line" aria-hidden="true"></span>
-        <h1>Squad Eliminated</h1>
-        <span class="elim-line" aria-hidden="true"></span>
+      <div class="terminal reveal" role="group" aria-label="Simulated session log">
+        <div class="terminal-bar">
+          <span class="terminal-dot dot-red"></span>
+          <span class="terminal-dot dot-amber"></span>
+          <span class="terminal-dot dot-green"></span>
+          <span class="terminal-title">zsh — claude-code</span>
+        </div>
+        <pre class="terminal-body" id="terminalBody" aria-live="polite"></pre>
       </div>
-      <p class="elim-sub reveal">by their own decision-making, most likely.</p>
 
       <p class="hero-sub reveal">
-        Mullet and Ben are, statistically speaking, the reason this squad hasn't
-        seen a Top 5 since Season 3. This is an intervention. Okay — it's also
-        a callout.
+        Every section below documents something that actually happened in
+        this repository — not a demo written for the occasion. Real
+        commits, a real production bug, a real fix, a real deployment.
       </p>
       <div class="hero-actions reveal">
-        <a class="btn btn-blood" href="#replay">See the evidence ↓</a>
-        <a class="btn btn-ghost" href="#casefiles">Read the case files</a>
-      </div>
-    </div>
-
-    <div class="ledger reveal" role="group" aria-label="Season statistics">
-      <div class="wrap ledger-inner">
-        <div class="ledger-item">
-          <span class="ledger-value">#14 / 20</span>
-          <span class="ledger-label">Average Placement</span>
-        </div>
-        <div class="ledger-item">
-          <span class="ledger-value tier-grey">47</span>
-          <span class="ledger-label">Grey Mods Looted</span>
-        </div>
-        <div class="ledger-item">
-          <span class="ledger-value">112×</span>
-          <span class="ledger-label">"Don't Follow Me" Said</span>
-        </div>
-        <div class="ledger-item">
-          <span class="ledger-value">89</span>
-          <span class="ledger-label">Solo Revives Required</span>
-        </div>
+        <a class="btn btn-accent" href="#capabilities">See what happened ↓</a>
+        <a class="btn btn-ghost" href="https://github.com/JackThompsonHouse/AI" target="_blank" rel="noopener">View the repo</a>
       </div>
     </div>
   </section>
 
-  <!-- PATCH NOTES -->
-  <section class="section patch-notes">
+  <!-- CAPABILITIES -->
+  <section class="section" id="capabilities">
     <div class="wrap">
-      <p class="eyebrow reveal">Patch Notes</p>
-      <h2 class="section-title reveal">v1.0 — Known Issues <span class="unresolved">(Unresolved)</span></h2>
+      <p class="eyebrow reveal">## capabilities.md</p>
+      <h2 class="section-title reveal">What actually happened in this repo</h2>
 
-      <ul class="issue-list">
-        <li class="issue-item reveal">
-          <span class="issue-tag tag-mullet">Mullet</span>
-          <p>Compulsively loots every grey attachment on the map while the squad is actively engaged 20 metres away. Root cause: unknown. Fix: not coming this patch.</p>
+      <ul class="check-list">
+        <li class="check-item reveal">
+          <span class="check-box" aria-hidden="true">✓</span>
+          <div>
+            <h3>Adapts when the brief changes entirely</h3>
+            <p>This repo has been a fake IT company, an Apex Legends roast page, and now a case study about itself — without the Dockerfile, nginx config, or deploy pipeline ever needing to change.</p>
+          </div>
         </li>
-        <li class="issue-item reveal">
-          <span class="issue-tag tag-ben">Ben</span>
-          <p>Grapples solo into the enemy squad, pings "taking a look," is immediately knocked. Reported by Ben as intended behaviour.</p>
+        <li class="check-item reveal">
+          <span class="check-box" aria-hidden="true">✓</span>
+          <div>
+            <h3>Reads and edits multiple files coherently</h3>
+            <p>Rewrote <code>index.html</code>, <code>styles.css</code>, and <code>main.js</code> together, twice, without breaking the class names and element IDs that tie them to each other.</p>
+          </div>
         </li>
-        <li class="issue-item reveal">
-          <span class="issue-tag tag-squad">Squad</span>
-          <p>Placement consistently capped at "still alive, technically" as a direct result of the above. Investigating. Have been investigating for three seasons.</p>
+        <li class="check-item reveal">
+          <span class="check-box" aria-hidden="true">✓</span>
+          <div>
+            <h3>Diagnoses infrastructure, not just code</h3>
+            <p>Traced a Coolify healthcheck stuck on "connection refused" through nginx's own entrypoint log output to an IPv6-vs-IPv4 loopback mismatch — see <a href="#fix">fix.diff</a>.</p>
+          </div>
+        </li>
+        <li class="check-item reveal">
+          <span class="check-box" aria-hidden="true">✓</span>
+          <div>
+            <h3>Handles auth flows safely</h3>
+            <p>Walked through a GitHub device-code login live in conversation — relayed a one-time code, waited for approval, never saw a password or token in plaintext.</p>
+          </div>
+        </li>
+        <li class="check-item reveal">
+          <span class="check-box" aria-hidden="true">✓</span>
+          <div>
+            <h3>Verifies before claiming done</h3>
+            <p>Validated HTML tag balance, CSS class references, and JS element IDs by script, then rendered the actual page in a headless browser at desktop and mobile widths to check.</p>
+          </div>
+        </li>
+        <li class="check-item reveal">
+          <span class="check-box" aria-hidden="true">✓</span>
+          <div>
+            <h3>Ships to production</h3>
+            <p>Committed, pushed to <code>origin/main</code>, and this exact page went live the same way — Coolify picked it up and redeployed it.</p>
+          </div>
         </li>
       </ul>
     </div>
   </section>
 
-  <!-- CASE FILES -->
-  <section class="section section-alt" id="casefiles">
+  <!-- HISTORY -->
+  <section class="section section-alt" id="history">
     <div class="wrap">
-      <p class="eyebrow reveal">Subject Intake</p>
-      <h2 class="section-title reveal">Two case files. Zero self-awareness.</h2>
+      <p class="eyebrow reveal">$ git log --oneline</p>
+      <h2 class="section-title reveal">Five commits, three redeploys, one running joke</h2>
 
-      <div class="case-grid">
-        <article class="case-card case-mullet reveal">
-          <figure class="case-photo">
-            <img src="assets/newcastle-cat.jpg" alt="Mullet's Newcastle main, mid-loot as usual" loading="lazy">
-            <figcaption>Exhibit A — subject, allegedly playing Newcastle</figcaption>
-          </figure>
-
-          <div class="case-head">
-            <svg class="case-icon" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-              <rect x="9" y="17" width="22" height="8" rx="2" stroke="currentColor" stroke-width="2.25"/>
-              <path d="M14 17V13C14 11.3 15.3 10 17 10H23C24.7 10 26 11.3 26 13V17" stroke="currentColor" stroke-width="2.25"/>
-              <circle cx="15" cy="21" r="1.6" fill="currentColor"/>
-              <circle cx="20" cy="21" r="1.6" fill="currentColor"/>
-              <circle cx="25" cy="21" r="1.6" fill="currentColor"/>
-            </svg>
-            <div>
-              <h3>Mullet</h3>
-              <span class="case-legend">Legend: Newcastle</span>
-            </div>
-          </div>
-
-          <dl class="case-body">
-            <div>
-              <dt>Diagnosis</dt>
-              <dd>Loot Goblin Syndrome</dd>
-            </div>
-            <div>
-              <dt>Symptoms</dt>
-              <dd>Opens every bin, box, and dead teammate's backpack for a grey barrel stabiliser while the squad is 3v1 twenty metres away.</dd>
-            </div>
-            <div>
-              <dt>Exhibit</dt>
-              <dd class="exhibit-quote">"Hang on — one sec — this might be a helmet."</dd>
-            </div>
-            <div>
-              <dt>Prescribed Treatment</dt>
-              <dd>If it's grey, leave it. If it's a fight, join it. You have a shield generator, Mullet, not a shopping trolley.</dd>
-            </div>
-          </dl>
-        </article>
-
-        <article class="case-card case-ben reveal">
-          <figure class="case-photo case-photo-tilt-right">
-            <img src="assets/pathfinder-spoderman.png" alt="Ben's Pathfinder, moments before going in alone" loading="lazy">
-            <figcaption>Exhibit B — subject, moments before "don't follow me"</figcaption>
-          </figure>
-
-          <div class="case-head">
-            <svg class="case-icon" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-              <circle cx="20" cy="11" r="4" stroke="currentColor" stroke-width="2.25"/>
-              <path d="M20 15V24M20 24L12 33M20 24L29 30" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"/>
-              <path d="M20 19L28 12" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"/>
-            </svg>
-            <div>
-              <h3>Ben</h3>
-              <span class="case-legend">Legend: Pathfinder</span>
-            </div>
-          </div>
-
-          <dl class="case-body">
-            <div>
-              <dt>Diagnosis</dt>
-              <dd>Solo Queue Energy (In a Full Squad)</dd>
-            </div>
-            <div>
-              <dt>Symptoms</dt>
-              <dd>Grapples into the enemy team alone, announces "taking a look, don't follow me," and is immediately no longer taking a look, because he is now respawning.</dd>
-            </div>
-            <div>
-              <dt>Exhibit</dt>
-              <dd class="exhibit-quote">"Don't follow me."<br><span class="narrator">(narrator: they did not follow him. he still died.)</span></dd>
-            </div>
-            <div>
-              <dt>Prescribed Treatment</dt>
-              <dd>Pathfinder has a grapple, not a death wish. Use it to rotate, not to solo-queue inside a squad game.</dd>
-            </div>
-          </dl>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <!-- REPLAY -->
-  <section class="section" id="replay">
-    <div class="wrap">
-      <p class="eyebrow reveal">Match Replay</p>
-      <h2 class="section-title reveal">A completely typical Tuesday</h2>
-
-      <ol class="killfeed">
-        <li class="killfeed-item reveal">
-          <span class="kf-dot dot-ben" aria-hidden="true"></span>
-          <span class="kf-text"><strong>Ben</strong> pings "ENEMY TEAM" from 200m away</span>
+      <ol class="log-list">
+        <li class="log-item reveal">
+          <span class="log-hash">cac817f</span>
+          <span class="log-msg">first commit</span>
+          <span class="log-note">the empty repo this all started from</span>
         </li>
-        <li class="killfeed-item reveal">
-          <span class="kf-dot dot-ben" aria-hidden="true"></span>
-          <span class="kf-text"><strong>Ben:</strong> "taking a look, don't follow me"</span>
+        <li class="log-item reveal">
+          <span class="log-hash">fb71a59</span>
+          <span class="log-msg">Add Thompsonhouse MSP marketing site with Coolify deployment setup</span>
+          <span class="log-note">a full fake IT-support business, written and pushed in one go</span>
         </li>
-        <li class="killfeed-item reveal">
-          <span class="kf-dot dot-system" aria-hidden="true"></span>
-          <span class="kf-text">Ben was knocked by an R-99 he apparently did not see</span>
+        <li class="log-item reveal">
+          <span class="log-hash">191f08d</span>
+          <span class="log-msg">Fix healthcheck connection-refused: add IPv6 listener, use 127.0.0.1</span>
+          <span class="log-note">diagnosed from raw Coolify and nginx logs, not guessed</span>
         </li>
-        <li class="killfeed-item reveal">
-          <span class="kf-dot dot-ben" aria-hidden="true"></span>
-          <span class="kf-text"><strong>Ben:</strong> "guys??"</span>
+        <li class="log-item reveal">
+          <span class="log-hash">2e635a1</span>
+          <span class="log-msg">Replace Thompsonhouse MSP site with Copium Squad Apex roast page</span>
+          <span class="log-note">the brief changed completely; the infra didn't need to</span>
         </li>
-        <li class="killfeed-item reveal">
-          <span class="kf-dot dot-mullet" aria-hidden="true"></span>
-          <span class="kf-text"><strong>Mullet:</strong> "one sec, this bin's got a helmet"</span>
-        </li>
-        <li class="killfeed-item reveal killfeed-final">
-          <span class="kf-dot dot-system" aria-hidden="true"></span>
-          <span class="kf-text">Squad was eliminated.</span>
+        <li class="log-item reveal">
+          <span class="log-hash">6b880f2</span>
+          <span class="log-msg">Add case file evidence photos for Mullet and Ben</span>
+          <span class="log-note">wired in real user-supplied images, styled to fit</span>
         </li>
       </ol>
     </div>
   </section>
 
-  <!-- STATS -->
-  <section class="section section-alt" id="stats">
+  <!-- FIX.DIFF -->
+  <section class="section" id="fix">
     <div class="wrap">
-      <p class="eyebrow reveal">The Numbers Don't Lie</p>
-      <h2 class="section-title reveal">Season stat comparison</h2>
+      <p class="eyebrow reveal">$ git show 191f08d</p>
+      <h2 class="section-title reveal">A bug that only showed up in production</h2>
+      <p class="fix-copy reveal">
+        Coolify's healthcheck kept failing with <code>connection refused</code>
+        — over and over, ten attempts, every deploy. But nginx's own logs
+        showed it starting cleanly with no errors. The container was fine.
+        The healthcheck's <em>address</em> wasn't.
+      </p>
 
-      <div class="table-wrap reveal">
-        <table class="stat-table">
-          <thead>
-            <tr>
-              <th scope="col">Stat</th>
-              <th scope="col" class="col-mullet">Mullet</th>
-              <th scope="col" class="col-ben">Ben</th>
-              <th scope="col" class="col-control">A Functional Teammate</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row">Grey attachments hoarded / match</th>
-              <td>6</td>
-              <td>0</td>
-              <td>0</td>
-            </tr>
-            <tr>
-              <th scope="row">Distance solo-pushed / match</th>
-              <td>12m</td>
-              <td>380m</td>
-              <td>&lt;50m</td>
-            </tr>
-            <tr>
-              <th scope="row">Times pinged before dying</th>
-              <td>0</td>
-              <td>1</td>
-              <td>3+</td>
-            </tr>
-            <tr>
-              <th scope="row">Squad wipes directly caused</th>
-              <td>2 / match</td>
-              <td>3 / match</td>
-              <td>0</td>
-            </tr>
-            <tr>
-              <th scope="row">Post-game excuse of choice</th>
-              <td>"the loot was there"</td>
-              <td>"you guys were slow"</td>
-              <td>none needed</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- PROGRAM -->
-  <section class="section" id="program">
-    <div class="wrap">
-      <p class="eyebrow reveal">The Program</p>
-      <h2 class="section-title reveal">Five steps to being a better teammate</h2>
-
-      <ol class="program-list">
-        <li class="program-item reveal">
-          <span class="program-num">01</span>
-          <p>Admit the grey shotgun bolt was never going to save you.</p>
-        </li>
-        <li class="program-item reveal">
-          <span class="program-num">02</span>
-          <p>"Don't follow me" is not a callout. It's a confession.</p>
-        </li>
-        <li class="program-item reveal">
-          <span class="program-num">03</span>
-          <p>A care package beats a common backpack. Rotate accordingly.</p>
-        </li>
-        <li class="program-item reveal">
-          <span class="program-num">04</span>
-          <p>Third-partying yourself into a 1v3 isn't aggression. It's a donation.</p>
-        </li>
-        <li class="program-item reveal">
-          <span class="program-num">05</span>
-          <p>Ping more than once a game. We know you can see the ping wheel.</p>
-        </li>
-      </ol>
-    </div>
-  </section>
-
-  <!-- PLEDGE -->
-  <section class="section pledge-section" id="pledge">
-    <div class="wrap pledge-wrap reveal">
-      <p class="eyebrow">Take The Pledge</p>
-      <h2 class="section-title">Ready to stop being the problem?</h2>
-      <p class="pledge-copy">Sign below. It's not legally binding. It is, however, extremely public.</p>
-
-      <form class="pledge-form" id="pledgeForm">
-        <label class="pledge-checkbox">
-          <input type="checkbox" id="pledgeCheck" required>
-          <span>I solemnly swear to leave grey loot on the ground and never say "don't follow me" again.</span>
-        </label>
-
-        <div class="form-row">
-          <label for="signature">Signature</label>
-          <input type="text" id="signature" name="signature" placeholder="Mullet, or Ben, presumably" required>
+      <div class="diff-grid">
+        <div class="diff-block reveal">
+          <div class="diff-file">Dockerfile</div>
+          <div class="diff-line diff-context"><span class="diff-marker"> </span><span class="diff-code">EXPOSE 80</span></div>
+          <div class="diff-line diff-context"><span class="diff-marker"> </span><span class="diff-code"></span></div>
+          <div class="diff-line diff-remove"><span class="diff-marker">-</span><span class="diff-code">HEALTHCHECK ... CMD wget -q --spider http://localhost/ || exit 1</span></div>
+          <div class="diff-line diff-add"><span class="diff-marker">+</span><span class="diff-code">HEALTHCHECK ... CMD wget -q --spider http://127.0.0.1/ || exit 1</span></div>
         </div>
 
-        <button class="btn btn-blood" type="submit">Sign the pledge</button>
-        <p class="form-note" id="pledgeNote" aria-live="polite"></p>
-      </form>
+        <div class="diff-block reveal">
+          <div class="diff-file">nginx.conf</div>
+          <div class="diff-line diff-context"><span class="diff-marker"> </span><span class="diff-code">server {</span></div>
+          <div class="diff-line diff-context"><span class="diff-marker"> </span><span class="diff-code">    listen 80;</span></div>
+          <div class="diff-line diff-add"><span class="diff-marker">+</span><span class="diff-code">    listen [::]:80;</span></div>
+          <div class="diff-line diff-context"><span class="diff-marker"> </span><span class="diff-code">    server_name _;</span></div>
+        </div>
+      </div>
+
+      <p class="fix-caption reveal">
+        nginx's alpine image only auto-adds an IPv6 listener when its default
+        config is left untouched — ours wasn't. Inside the container,
+        <code>localhost</code> resolved to <code>::1</code> first, so the
+        healthcheck's own request found nothing listening and failed
+        instantly, even though the site was serving fine on IPv4 the whole
+        time. Found by reading the entrypoint log line that said exactly
+        that, not by guessing and retrying.
+      </p>
+    </div>
+  </section>
+
+  <!-- DEPLOY.SH -->
+  <section class="section section-alt" id="deploy">
+    <div class="wrap">
+      <p class="eyebrow reveal">$ cat deploy.sh</p>
+      <h2 class="section-title reveal">From commit to production</h2>
+
+      <ol class="pipeline">
+        <li class="pipeline-item reveal">
+          <span class="pipeline-num">01</span>
+          <div>
+            <h3>Dockerfile</h3>
+            <p>nginx:alpine, serving the static files directly. No build step, no framework.</p>
+          </div>
+        </li>
+        <li class="pipeline-item reveal">
+          <span class="pipeline-num">02</span>
+          <div>
+            <h3>Coolify</h3>
+            <p>Builds the image on push, runs the healthcheck, keeps the container running on a home server.</p>
+          </div>
+        </li>
+        <li class="pipeline-item reveal">
+          <span class="pipeline-num">03</span>
+          <div>
+            <h3>Cloudflare Tunnel</h3>
+            <p>Exposes it publicly without opening a single inbound port on the home network.</p>
+          </div>
+        </li>
+        <li class="pipeline-item reveal">
+          <span class="pipeline-num">04</span>
+          <div>
+            <h3>You, reading this</h3>
+            <p>Wherever this domain is pointed right now — that's the end of the pipeline.</p>
+          </div>
+        </li>
+      </ol>
     </div>
   </section>
 
@@ -353,23 +253,22 @@
 
 <footer class="site-footer">
   <div class="wrap footer-inner">
-    <a class="brand brand-footer" href="#top" aria-label="Copium Squad home">
+    <a class="brand brand-footer" href="#top" aria-label="Home">
       <svg class="brand-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-        <path d="M20 4L34 11V21C34 29 28 34.5 20 37C12 34.5 6 29 6 21V11L20 4Z" stroke="currentColor" stroke-width="2.25" stroke-linejoin="round"/>
-        <path d="M14 20L18 24L27 15" stroke="var(--blood)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="4" y="4" width="32" height="32" rx="6" stroke="currentColor" stroke-width="2.25"/>
+        <path d="M13 15L18 20L13 25" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M21 25H27" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>
       </svg>
-      <span class="brand-word">Copium Squad</span>
+      <span class="brand-word">claude-code<span class="brand-cursor">_</span></span>
     </a>
-    <p class="footer-tagline">Published without the consent, knowledge, or legal review of Mullet or Ben.</p>
+    <p class="footer-tagline">Every section on this page is true. Nothing was staged for the demo.</p>
 
     <nav class="footer-nav" aria-label="Footer">
-      <a href="#casefiles">Case Files</a>
-      <a href="#replay">The Replay</a>
-      <a href="#stats">The Stats</a>
-      <a href="#program">The Program</a>
+      <a href="https://github.com/JackThompsonHouse/AI" target="_blank" rel="noopener">Source</a>
+      <a href="https://claude.com/claude-code" target="_blank" rel="noopener">Claude Code</a>
     </nav>
 
-    <p class="footer-copy">All stats are 100% accurate estimates. Fight us. &copy; <span id="year">2026</span> Copium Squad.</p>
+    <p class="footer-copy">&copy; <span id="year">2026</span> — built by Claude Code, deployed by Coolify, tunneled by Cloudflare.</p>
   </div>
 </footer>
 

@@ -1,17 +1,19 @@
-# Copium Squad
+# What Claude Code Actually Built Here
 
-A completely unsanctioned Apex Legends performance review for Mullet
-(professional grey-loot enthusiast) and Ben (solo push connoisseur).
-Static HTML/CSS/JS site, containerized with nginx for deployment on
+A case-study single-pager documenting the real history of this repo:
+an animated terminal replaying a real session, the actual `git log`,
+a real diff from a real production bug, and the real deploy pipeline.
+Static HTML/CSS/JS, containerized with nginx for deployment on
 [Coolify](https://coolify.io).
 
 ## Structure
 
 ```
-index.html      Single-page site (hero, patch notes, case files, replay, stats, program, pledge)
+index.html      Single-page site (hero terminal, capabilities, history, fix.diff, deploy.sh)
 css/styles.css  Styles
-js/main.js      Mobile nav, scroll reveal, pledge form
-assets/         SVG mark / favicon
+js/main.js      Mobile nav, scroll reveal, terminal typewriter, tab scroll-spy
+assets/         SVG mark / favicon (plus leftover images from a previous
+                 version of this site — no longer referenced)
 Dockerfile      nginx:alpine image serving the static files
 nginx.conf      nginx server config (gzip, cache headers, IPv4 + IPv6 listeners)
 docker-compose.yml
