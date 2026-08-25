@@ -34,8 +34,16 @@
 
   var PHASES = ["Assess", "Design", "Transform", "Operate", "Supplementary"];
   var COVERAGE = ["Standard (9am-5pm)", "Evening / Saturday", "Sunday / Holiday"];
+  var SERVICE_TYPES = [
+    "Hardware", "Modern Work", "Network Services", "Cloud Services",
+    "Connected Networking", "Infrastructure Services", "Secure Enterprise",
+    "Service Delivery", "Other"
+  ];
 
-  var STORAGE_KEY = "ps-quote-builder-v1";
+  // v2: fixes a bug where the phase dropdown stored its numeric option index
+  // instead of the phase name, corrupting saved quotes. Bumped so anyone who
+  // hit that bug starts from a clean slate rather than re-loading bad data.
+  var STORAGE_KEY = "ps-quote-builder-v2";
 
   var nextLineId = 1;
 
@@ -50,6 +58,7 @@
       phase: PHASES[0],
       description: "",
       roleIndex: 0,
+      serviceType: SERVICE_TYPES[0],
       coverageIndex: 0,
       days: 0
     };
@@ -110,12 +119,26 @@
     return e;
   }
 
+  // For fields keyed by array index (role, coverage) - option value is the index.
   function optionList(items, selectedIndex) {
     return items.map(function (label, i) {
       var o = document.createElement("option");
       o.value = i;
       o.textContent = label;
       if (i === selectedIndex) o.selected = true;
+      return o;
+    });
+  }
+
+  // For fields keyed by their own text (phase, service type) - option value
+  // is the label itself, so the stored state is a plain, self-describing
+  // string rather than an index that only makes sense against this list.
+  function optionListByValue(items, selectedValue) {
+    return items.map(function (label) {
+      var o = document.createElement("option");
+      o.value = label;
+      o.textContent = label;
+      if (label === selectedValue) o.selected = true;
       return o;
     });
   }
@@ -138,15 +161,17 @@
       var tr = document.createElement("tr");
       tr.dataset.id = line.id;
 
-      var phaseSel = el("select", { "data-field": "phase" }, optionList(PHASES, PHASES.indexOf(line.phase)));
+      var phaseSel = el("select", { "data-field": "phase" }, optionListByValue(PHASES, line.phase));
       var descInput = el("input", { type: "text", "data-field": "description", placeholder: "e.g. Discovery workshop", value: line.description });
       var roleSel = el("select", { "data-field": "roleIndex" }, optionList(ROLES.map(function (r) { return r.name; }), line.roleIndex));
+      var serviceTypeSel = el("select", { "data-field": "serviceType" }, optionListByValue(SERVICE_TYPES, line.serviceType));
       var coverageSel = el("select", { "data-field": "coverageIndex" }, optionList(COVERAGE, line.coverageIndex));
       var daysInput = el("input", { type: "number", min: "0", step: "0.5", "data-field": "days", value: line.days });
 
       tr.appendChild(el("td", { class: "col-phase" }, [phaseSel]));
       tr.appendChild(el("td", { class: "col-desc" }, [descInput]));
       tr.appendChild(el("td", { class: "col-role" }, [roleSel]));
+      tr.appendChild(el("td", { class: "col-servicetype" }, [serviceTypeSel]));
       tr.appendChild(el("td", { class: "col-daytype" }, [coverageSel]));
       tr.appendChild(el("td", { class: "col-days" }, [daysInput]));
       tr.appendChild(el("td", { class: "col-money computed cell-costday", text: money(fig.costDay) }));
@@ -297,10 +322,79 @@
     });
   }
 
+  function csvField(value) {
+    var s = String(value == null ? "" : value);
+    if (/[",\n\r]/.test(s)) s = '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  }
+
+  function csvRow(values) {
+    return values.map(csvField).join(",") + "\r\n";
+  }
+
+  function buildCsv() {
+    var csv = "";
+    csv += csvRow(["Customer", state.meta.customer]);
+    csv += csvRow(["Client / account manager", state.meta.manager]);
+    csv += csvRow(["Opportunity reference", state.meta.opportunity]);
+    csv += csvRow(["Prepared by", state.meta.preparedBy]);
+    csv += csvRow(["Verified by", state.meta.verifiedBy]);
+    csv += csvRow(["Date", state.meta.date]);
+    csv += "\r\n";
+
+    csv += csvRow(["Phase", "Work package description", "Service grade", "Service type", "Coverage", "Days", "Cost/day", "Cost total", "Sell/day", "Sell total", "Margin"]);
+    state.lines.forEach(function (line) {
+      var role = ROLES[line.roleIndex] || ROLES[0];
+      var fig = lineFigures(line);
+      csv += csvRow([
+        line.phase,
+        line.description,
+        role.name,
+        line.serviceType,
+        COVERAGE[line.coverageIndex] || COVERAGE[0],
+        line.days,
+        fig.costDay.toFixed(2),
+        fig.costTotal.toFixed(2),
+        fig.sellDay.toFixed(2),
+        fig.sellTotal.toFixed(2),
+        fig.margin.toFixed(2)
+      ]);
+    });
+
+    var totals = state.lines.reduce(function (acc, line) {
+      var fig = lineFigures(line);
+      acc.days += Number(line.days) || 0;
+      acc.cost += fig.costTotal;
+      acc.sell += fig.sellTotal;
+      return acc;
+    }, { days: 0, cost: 0, sell: 0 });
+    var margin = totals.sell - totals.cost;
+
+    csv += "\r\n";
+    csv += csvRow(["Total", "", "", "", "", totals.days, "", totals.cost.toFixed(2), "", totals.sell.toFixed(2), margin.toFixed(2)]);
+    return csv;
+  }
+
+  function exportCsv() {
+    var csv = buildCsv();
+    var blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    var namePart = (state.meta.customer || "quote").trim().replace(/[^a-z0-9]+/gi, "-").toLowerCase();
+    a.href = url;
+    a.download = "ps-quote-" + (namePart || "untitled") + "-" + state.meta.date + ".csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
   function bindTopbar() {
     document.getElementById("printBtn").addEventListener("click", function () {
       window.print();
     });
+
+    document.getElementById("exportCsvBtn").addEventListener("click", exportCsv);
 
     document.getElementById("newQuoteBtn").addEventListener("click", function () {
       if (!confirm("Start a new quote? This clears the current quote details and line items.")) return;

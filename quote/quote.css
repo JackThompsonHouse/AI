@@ -139,7 +139,7 @@ body {
 
 /* lines table */
 .table-scroll { overflow-x: auto; }
-table { border-collapse: collapse; width: 100%; min-width: 980px; }
+table { border-collapse: collapse; width: 100%; min-width: 1120px; }
 .lines-table th, .lines-table td {
   padding: 8px 8px;
   border-bottom: 1px solid var(--border);
@@ -170,6 +170,7 @@ table { border-collapse: collapse; width: 100%; min-width: 980px; }
 .col-days input { width: 64px; text-align: right; }
 .col-desc input { min-width: 200px; }
 .col-role select { min-width: 190px; }
+.col-servicetype select { min-width: 150px; }
 .col-daytype select { min-width: 150px; }
 .col-remove { width: 36px; }
 .computed { color: var(--text-dim); }
