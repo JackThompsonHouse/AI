@@ -2,34 +2,35 @@
   "use strict";
 
   // Role name -> [dayCost, dayCost] cost and sell rates for each coverage type.
-  // Sourced from the "Variables" tab of the FY27 PS Quote workbook.
   // cost/sell arrays are [Standard 9am-5pm, Evening/Saturday, Sunday/Holiday]
+  // NOTE: flattened to placeholder values (cost 123 / sell 456 across the
+  // board) at request - these are no longer the real day rates.
   var ROLES = [
-    { name: "Enterprise Architect", cost: [791, 988.75, 1186.5], sell: [1550, 1937.5, 2325] },
-    { name: "Automation Architect", cost: [749, 936.25, 1123.5], sell: [1550, 2325, 3100] },
-    { name: "Programme Manager", cost: [881, 1101.25, 1321.5], sell: [1250, 1875, 2500] },
-    { name: "Service Architect", cost: [817, 1021.25, 1225.5], sell: [1250, 1875, 2500] },
-    { name: "Automation Consultant", cost: [523, 653.75, 784.5], sell: [1100, 1650, 2200] },
-    { name: "Process Consultant", cost: [463, 578.75, 694.5], sell: [1100, 1650, 2200] },
-    { name: "Solution Architect", cost: [729, 911.25, 1093.5], sell: [1250, 1875, 2500] },
-    { name: "Principal Service Delivery Manager", cost: [696, 870, 1044], sell: [750, 1125, 1500] },
-    { name: "Senior Project Manager", cost: [638, 797.5, 957], sell: [950, 1425, 1900] },
-    { name: "Network Consultant", cost: [664, 830, 996], sell: [950, 1425, 1900] },
-    { name: "Microsoft/Platforms Consultant", cost: [554, 692.5, 831], sell: [950, 1425, 1900] },
-    { name: "Project Manager", cost: [494, 617.5, 741], sell: [850, 1275, 1700] },
-    { name: "Service Delivery Manager", cost: [477, 596.25, 715.5], sell: [1000, 1500, 2000] },
-    { name: "Network Engineer", cost: [420, 525, 630], sell: [850, 1275, 1700] },
-    { name: "Wireless Survey Consultant", cost: [455, 568.75, 682.5], sell: [850, 1275, 1700] },
-    { name: "Field Service Engineer (Centrex)", cost: [343, 428.75, 514.5], sell: [750, 1125, 1500] },
-    { name: "PMO/Project Co ordinator", cost: [349, 436.25, 523.5], sell: [450, 675, 900] },
-    { name: "Cyber Security Architect", cost: [862, 1077.5, 1293], sell: [450, 675, 900] },
-    { name: "Cyber Security Analyst", cost: [603, 753.75, 904.5], sell: [1500, 2250, 3000] },
-    { name: "SDE Consultant", cost: [467, 583.75, 700.5], sell: [1250, 1875, 2500] },
-    { name: "Service Delivery Executive", cost: [300, 375, 450], sell: [450, 675, 900] },
-    { name: "Service Operations Manager", cost: [428, 535, 642], sell: [600, 900, 1200] },
-    { name: "Field Service Engineer (Non-Centrex)", cost: [288, 360, 432], sell: [450, 675, 900] },
-    { name: "Monitoring Specialist", cost: [586, 732.5, 879], sell: [850, 1275, 1700] },
-    { name: "Third-Party (manual pricing)", cost: [0, 0, 0], sell: [0, 0, 0] }
+    { name: "Enterprise Architect", cost: [123, 123, 123], sell: [456, 456, 456] },
+    { name: "Automation Architect", cost: [123, 123, 123], sell: [456, 456, 456] },
+    { name: "Programme Manager", cost: [123, 123, 123], sell: [456, 456, 456] },
+    { name: "Service Architect", cost: [123, 123, 123], sell: [456, 456, 456] },
+    { name: "Automation Consultant", cost: [123, 123, 123], sell: [456, 456, 456] },
+    { name: "Process Consultant", cost: [123, 123, 123], sell: [456, 456, 456] },
+    { name: "Solution Architect", cost: [123, 123, 123], sell: [456, 456, 456] },
+    { name: "Principal Service Delivery Manager", cost: [123, 123, 123], sell: [456, 456, 456] },
+    { name: "Senior Project Manager", cost: [123, 123, 123], sell: [456, 456, 456] },
+    { name: "Network Consultant", cost: [123, 123, 123], sell: [456, 456, 456] },
+    { name: "Microsoft/Platforms Consultant", cost: [123, 123, 123], sell: [456, 456, 456] },
+    { name: "Project Manager", cost: [123, 123, 123], sell: [456, 456, 456] },
+    { name: "Service Delivery Manager", cost: [123, 123, 123], sell: [456, 456, 456] },
+    { name: "Network Engineer", cost: [123, 123, 123], sell: [456, 456, 456] },
+    { name: "Wireless Survey Consultant", cost: [123, 123, 123], sell: [456, 456, 456] },
+    { name: "Field Service Engineer (Centrex)", cost: [123, 123, 123], sell: [456, 456, 456] },
+    { name: "PMO/Project Co ordinator", cost: [123, 123, 123], sell: [456, 456, 456] },
+    { name: "Cyber Security Architect", cost: [123, 123, 123], sell: [456, 456, 456] },
+    { name: "Cyber Security Analyst", cost: [123, 123, 123], sell: [456, 456, 456] },
+    { name: "SDE Consultant", cost: [123, 123, 123], sell: [456, 456, 456] },
+    { name: "Service Delivery Executive", cost: [123, 123, 123], sell: [456, 456, 456] },
+    { name: "Service Operations Manager", cost: [123, 123, 123], sell: [456, 456, 456] },
+    { name: "Field Service Engineer (Non-Centrex)", cost: [123, 123, 123], sell: [456, 456, 456] },
+    { name: "Monitoring Specialist", cost: [123, 123, 123], sell: [456, 456, 456] },
+    { name: "Third-Party (manual pricing)", cost: [123, 123, 123], sell: [456, 456, 456] }
   ];
 
   var PHASES = ["Assess", "Design", "Transform", "Operate", "Supplementary"];
