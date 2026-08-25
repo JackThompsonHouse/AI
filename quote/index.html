@@ -21,8 +21,11 @@
     </div>
     <div class="topbar-actions">
       <button type="button" class="btn btn-ghost" id="newQuoteBtn">New quote</button>
+      <button type="button" class="btn btn-ghost" id="loadQuotesBtn">My quotes</button>
+      <button type="button" class="btn btn-ghost" id="editBtn" style="display:none">Edit</button>
       <button type="button" class="btn btn-ghost" id="exportCsvBtn">Export CSV</button>
-      <button type="button" class="btn btn-primary" id="printBtn">Print / Save PDF</button>
+      <button type="button" class="btn btn-ghost" id="printBtn">Print / Save PDF</button>
+      <button type="button" class="btn btn-primary" id="saveBtn">Save</button>
     </div>
   </div>
   <div class="brand-bar"></div>
@@ -91,6 +94,16 @@
   <p class="confidential-note">Contains Roc Technologies commercial rate data &mdash; internal use only, do not share externally.</p>
 
 </main>
+
+<div class="modal-overlay" id="loadModal" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="loadModalTitle">
+    <div class="modal-header">
+      <h2 id="loadModalTitle">My quotes</h2>
+      <button type="button" class="btn-remove" id="loadModalClose" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body" id="loadModalBody"></div>
+  </div>
+</div>
 
 <script src="quote.js"></script>
 </body>

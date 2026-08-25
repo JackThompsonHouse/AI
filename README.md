@@ -15,11 +15,16 @@ js/main.js      Mobile nav, scroll reveal, terminal typewriter, tab scroll-spy
 assets/         SVG mark / favicon (plus leftover images from a previous
                  version of this site — no longer referenced)
 quote/          Internal PS quote builder tool (see below), served at /quote/
-auth/htpasswd   Basic-auth credentials protecting /quote/ (not in web root)
-Dockerfile      nginx:alpine image serving the static files
+api/            Backend for the quote builder - Node/Express + SQLite,
+                 served internally (not exposed to the host), reached via
+                 nginx's /quote/api/ proxy
+auth/htpasswd   Basic-auth credentials protecting /quote/ and /quote/api/
+                 (not in web root)
+Dockerfile      nginx:alpine image serving the static files (the "web" service)
 nginx.conf      nginx server config (gzip, cache headers, IPv4 + IPv6 listeners,
-                 basic auth on /quote/)
-docker-compose.yml
+                 basic auth + API reverse proxy on /quote/)
+docker-compose.yml   Two services - web (nginx) and api (Node/SQLite) - plus
+                 a named volume so saved quotes survive redeploys
 ```
 
 ## PS Quote Builder (`/quote/`)
@@ -28,18 +33,36 @@ A multi-line professional-services quote calculator for internal use, ported
 from the FY27 PS Quote Excel workbook. Pick a service grade, coverage type
 (standard/evening-Saturday/Sunday-holiday) and day count per line item; cost,
 sell price and margin are computed automatically per line and totalled by
-service grade. State autosaves to the browser's `localStorage`; use "Print /
-Save PDF" to generate a clean quote document.
+service grade.
 
-It's plain HTML/CSS/JS — no build step, no framework, consistent with the
-rest of this repo.
+- **Save** stores the quote server-side (via `api/`) and switches to a
+  compact read-only summary view of the line items — useful once a quote is
+  more or less final and you don't want to scroll a wall of edit cards.
+  **Edit** switches back to the full editable view; saving again updates the
+  same record rather than creating a duplicate.
+- **My quotes** lists everything saved server-side (customer, updated time,
+  total sell) so a quote started on one device can be picked up on another.
+- The browser's `localStorage` still autosaves the in-progress draft on top
+  of this, purely as a same-device safety net against an accidental tab
+  close before you hit Save.
+- **Export CSV** / **Print / Save PDF** work on whatever's currently loaded,
+  same as before.
 
-**Access control**: `/quote/` is protected by HTTP basic auth (`auth_basic`
-in `nginx.conf`, credentials in `auth/htpasswd`) because it embeds Roc
-Technologies' real day rates, cost, and margin data. The `^~` prefix modifier
-on that nginx location is deliberate — it makes sure `quote.js`/`quote.css`
-(which contain the rate table) stay behind auth too, rather than being
-served unauthenticated by the static-asset caching rule below it.
+It's plain HTML/CSS/JS on the frontend — no build step, no framework,
+consistent with the rest of this repo. The backend (`api/`) is a small
+Express app; quotes are stored as JSON blobs in SQLite (`better-sqlite3`)
+rather than a normalized schema, since the frontend already owns the shape
+of a quote and there's no need to duplicate that server-side.
+
+**Access control**: `/quote/` and `/quote/api/` are both protected by HTTP
+basic auth (`auth_basic` in `nginx.conf`, credentials in `auth/htpasswd`)
+because they deal with Roc Technologies' real day rates, cost, and margin
+data. The `^~` prefix modifier on those nginx locations is deliberate — it
+makes sure `quote.js`/`quote.css` (which contain the rate table) and the API
+both stay behind auth, rather than being served unauthenticated by the
+static-asset caching rule further down the file. `/quote/api/` is listed
+before `/quote/` so nginx's longest-prefix match routes API calls to the
+backend instead of falling into the static file handler.
 
 Current login: username `psquote`. The password was generated randomly at
 build time — ask whoever set this up, or regenerate it:
@@ -49,6 +72,14 @@ NEWPASS=$(openssl rand -base64 18 | tr -d '=+/' | cut -c1-20)
 echo "psquote:$(openssl passwd -apr1 "$NEWPASS")" > auth/htpasswd
 echo "New password: $NEWPASS"
 ```
+
+**Data persistence**: saved quotes live in a SQLite file at `/data/quotes.db`
+inside the `api` container, backed by the `quotes-data` named volume in
+`docker-compose.yml`. If that volume isn't preserved across deploys (e.g. a
+Coolify configuration that recreates volumes from scratch), saved quotes
+will be lost on redeploy — worth confirming the volume persists after your
+first deploy by saving a test quote, redeploying, and checking it's still
+in **My quotes**.
 
 **Source data**: the original `.xlsx` workbook this was ported from contains
 full internal cost/margin detail across many roles and is intentionally
@@ -77,15 +108,26 @@ docker compose up --build
 
 ## Deploying on Coolify
 
+This app now has two services (`web` + `api`) and a named volume, so it
+**must** be deployed via the **Docker Compose** build pack pointing at
+`docker-compose.yml` — the plain Dockerfile build pack only builds `web` and
+won't start the API backend at all, breaking Save/My quotes.
+
 1. Push this repository to your git remote (already configured as `origin`).
 2. In Coolify, create a new **Resource → Application** and point it at this
    repository/branch.
-3. Coolify will detect the `Dockerfile` at the repo root — choose the
-   **Dockerfile** build pack (or **Docker Compose**, pointing at
-   `docker-compose.yml`).
-4. Set **Ports Exposes** to `80` (container listens on 80 via nginx) —
-   this must be exactly `80`, not left as Coolify's default `3000`.
-5. Attach your domain and deploy.
+3. Choose the **Docker Compose** build pack, pointing at `docker-compose.yml`
+   at the repo root. If this resource was previously set up on the plain
+   **Dockerfile** build pack, switch it to Docker Compose — otherwise the
+   `api` service and `quotes-data` volume are silently ignored.
+4. Confirm Coolify is persisting the `quotes-data` volume across deploys
+   (most Coolify setups do this automatically for named volumes declared in
+   compose, but it's worth checking after the first deploy - see "Data
+   persistence" above).
+5. Only `web`'s port 80 needs to be exposed externally — `api` is reached
+   internally by `web` via the compose network (service name `api`, port
+   `3001`) and shouldn't need a public port at all.
+6. Attach your domain and deploy.
 
 Every push to the tracked branch can trigger an automatic redeploy if you
 enable Coolify's webhook/auto-deploy for this app.

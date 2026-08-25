@@ -4,3 +4,14 @@ services:
     restart: unless-stopped
     ports:
       - "3000:80"
+    depends_on:
+      - api
+
+  api:
+    build: ./api
+    restart: unless-stopped
+    volumes:
+      - quotes-data:/data
+
+volumes:
+  quotes-data:

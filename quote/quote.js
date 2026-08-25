@@ -64,10 +64,16 @@
     };
   }
 
-  var state = loadState() || {
-    meta: { customer: "", manager: "", opportunity: "", preparedBy: "", verifiedBy: "", date: todayISO() },
-    lines: [newLine()]
-  };
+  function blankQuote() {
+    return {
+      id: null,
+      viewMode: "edit",
+      meta: { customer: "", manager: "", opportunity: "", preparedBy: "", verifiedBy: "", date: todayISO() },
+      lines: [newLine()]
+    };
+  }
+
+  var state = loadState() || blankQuote();
 
   // Make sure freshly-added lines never collide with IDs already present in
   // a quote restored from localStorage.
@@ -170,7 +176,18 @@
 
   function renderLines() {
     var body = document.getElementById("linesBody");
+    var addBtn = document.getElementById("addLineBtn");
+    var editBtn = document.getElementById("editBtn");
     body.innerHTML = "";
+
+    var isSummary = state.viewMode === "summary";
+    addBtn.style.display = isSummary ? "none" : "";
+    editBtn.style.display = isSummary ? "" : "none";
+
+    if (isSummary) {
+      renderLinesSummaryTable(body);
+      return;
+    }
 
     state.lines.forEach(function (line, index) {
       var fig = lineFigures(line);
@@ -241,6 +258,38 @@
     });
   }
 
+  // Compact read-only view shown once a quote has been saved, so reviewing
+  // a multi-line quote doesn't mean scrolling past a wall of edit cards.
+  function renderLinesSummaryTable(container) {
+    var table = el("table", { class: "summary-table line-summary-table" });
+    var thead = el("tr", null, [
+      el("th", { text: "Phase" }),
+      el("th", { text: "Title" }),
+      el("th", { text: "Service grade" }),
+      el("th", { text: "Coverage" }),
+      el("th", { text: "Days" }),
+      el("th", { text: "Sell total" })
+    ]);
+    table.appendChild(el("thead", null, [thead]));
+
+    var tbody = el("tbody");
+    state.lines.forEach(function (line) {
+      var role = ROLES[line.roleIndex] || ROLES[0];
+      var fig = lineFigures(line);
+      tbody.appendChild(el("tr", null, [
+        el("td", { text: line.phase }),
+        el("td", { text: line.title || "—" }),
+        el("td", { text: role.name }),
+        el("td", { text: COVERAGE[line.coverageIndex] || COVERAGE[0] }),
+        el("td", { text: String(Number(line.days) || 0) }),
+        el("td", { text: money(fig.sellTotal) })
+      ]));
+    });
+    table.appendChild(tbody);
+
+    container.appendChild(el("div", { class: "table-scroll" }, [table]));
+  }
+
   // Updates only the computed stat values for one card, without touching the
   // input elements, so an in-progress edit (e.g. typing in the days field)
   // doesn't lose focus/cursor position on every keystroke.
@@ -255,17 +304,27 @@
     marginEl.classList.toggle("margin-negative", fig.margin < 0);
   }
 
+  // Shared by the summary stat tiles and the payload sent to the save API,
+  // so the two never drift out of sync.
+  function computeTotals() {
+    var totals = { days: 0, cost: 0, sell: 0, margin: 0 };
+    state.lines.forEach(function (line) {
+      var fig = lineFigures(line);
+      totals.days += Number(line.days) || 0;
+      totals.cost += fig.costTotal;
+      totals.sell += fig.sellTotal;
+    });
+    totals.margin = totals.sell - totals.cost;
+    return totals;
+  }
+
   function renderSummary() {
-    var totals = { days: 0, cost: 0, sell: 0 };
+    var totals = computeTotals();
     var byRole = {};
 
     state.lines.forEach(function (line) {
       var fig = lineFigures(line);
       var days = Number(line.days) || 0;
-      totals.days += days;
-      totals.cost += fig.costTotal;
-      totals.sell += fig.sellTotal;
-
       var role = ROLES[line.roleIndex] || ROLES[0];
       if (!byRole[role.name]) byRole[role.name] = { days: 0, cost: 0, sell: 0 };
       byRole[role.name].days += days;
@@ -273,7 +332,7 @@
       byRole[role.name].sell += fig.sellTotal;
     });
 
-    var margin = totals.sell - totals.cost;
+    var margin = totals.margin;
     var marginPct = totals.sell ? margin / totals.sell : 0;
 
     var grand = document.getElementById("grandStats");
@@ -413,17 +472,10 @@
       ]);
     });
 
-    var totals = state.lines.reduce(function (acc, line) {
-      var fig = lineFigures(line);
-      acc.days += Number(line.days) || 0;
-      acc.cost += fig.costTotal;
-      acc.sell += fig.sellTotal;
-      return acc;
-    }, { days: 0, cost: 0, sell: 0 });
-    var margin = totals.sell - totals.cost;
+    var totals = computeTotals();
 
     csv += "\r\n";
-    csv += csvRow(["Total", "", "", "", "", "", totals.days, "", totals.cost.toFixed(2), "", totals.sell.toFixed(2), margin.toFixed(2)]);
+    csv += csvRow(["Total", "", "", "", "", "", totals.days, "", totals.cost.toFixed(2), "", totals.sell.toFixed(2), totals.margin.toFixed(2)]);
     return csv;
   }
 
@@ -441,19 +493,164 @@
     URL.revokeObjectURL(url);
   }
 
+  // --- Server persistence (save/load across devices) --------------------
+  // All requests go through nginx's /quote/api/ proxy, which sits behind
+  // the same basic auth as the rest of the tool.
+  var API_BASE = "api";
+
+  function apiRequest(method, path, body) {
+    var opts = { method: method, headers: {} };
+    if (body !== undefined) {
+      opts.headers["Content-Type"] = "application/json";
+      opts.body = JSON.stringify(body);
+    }
+    return fetch(API_BASE + path, opts).then(function (res) {
+      if (!res.ok) {
+        return res.json().catch(function () { return {}; }).then(function (err) {
+          throw new Error(err.error || ("request failed (" + res.status + ")"));
+        });
+      }
+      if (res.status === 204) return null;
+      return res.json();
+    });
+  }
+
+  function saveQuote() {
+    var saveBtn = document.getElementById("saveBtn");
+    var payload = { meta: state.meta, lines: state.lines, totals: computeTotals() };
+    var request = state.id
+      ? apiRequest("PUT", "/quotes/" + state.id, payload)
+      : apiRequest("POST", "/quotes", payload);
+
+    saveBtn.disabled = true;
+    saveBtn.textContent = "Saving…";
+    request.then(function (result) {
+      state.id = result.id;
+      state.viewMode = "summary";
+      saveState();
+      render();
+    }).catch(function (err) {
+      alert("Couldn't save this quote - " + err.message);
+    }).finally(function () {
+      saveBtn.disabled = false;
+      saveBtn.textContent = "Save";
+    });
+  }
+
+  function formatDateTime(iso) {
+    if (!iso) return "";
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return iso;
+    return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) +
+      " " + d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+  }
+
+  function openLoadModal() {
+    var modal = document.getElementById("loadModal");
+    var body = document.getElementById("loadModalBody");
+    modal.hidden = false;
+    body.innerHTML = "";
+    body.appendChild(el("p", { class: "modal-status", text: "Loading saved quotes…" }));
+
+    apiRequest("GET", "/quotes").then(function (rows) {
+      body.innerHTML = "";
+      if (!rows.length) {
+        body.appendChild(el("p", { class: "modal-status", text: "No saved quotes yet." }));
+        return;
+      }
+      rows.forEach(function (row) {
+        var openBtn = el("button", { type: "button", class: "btn btn-primary btn-small" });
+        openBtn.textContent = "Open";
+        openBtn.addEventListener("click", function () { openQuoteById(row.id); });
+
+        var deleteBtn = el("button", { type: "button", class: "btn btn-ghost btn-small" });
+        deleteBtn.textContent = "Delete";
+
+        var item = el("div", { class: "quote-list-item" }, [
+          el("div", { class: "quote-list-main" }, [
+            el("div", { class: "quote-list-title", text: row.customer || "(no customer name)" }),
+            el("div", {
+              class: "quote-list-sub",
+              text: (row.opportunity ? row.opportunity + " · " : "") + "Updated " + formatDateTime(row.updatedAt)
+            })
+          ]),
+          el("div", { class: "quote-list-figures" }, [
+            el("div", { class: "quote-list-sell", text: money(row.totalSell) }),
+            el("div", { class: "quote-list-days", text: row.totalDays + " days" })
+          ]),
+          el("div", { class: "quote-list-actions" }, [openBtn, deleteBtn])
+        ]);
+        deleteBtn.addEventListener("click", function () { deleteQuoteById(row.id, item); });
+
+        body.appendChild(item);
+      });
+    }).catch(function (err) {
+      body.innerHTML = "";
+      body.appendChild(el("p", { class: "modal-status", text: "Couldn't load saved quotes - " + err.message }));
+    });
+  }
+
+  function closeLoadModal() {
+    document.getElementById("loadModal").hidden = true;
+  }
+
+  function openQuoteById(id) {
+    apiRequest("GET", "/quotes/" + id).then(function (quote) {
+      state = {
+        id: quote.id,
+        viewMode: "summary",
+        meta: quote.meta,
+        lines: quote.lines
+      };
+      nextLineId = state.lines.reduce(function (max, l) { return Math.max(max, l.id); }, 0) + 1;
+      saveState();
+      closeLoadModal();
+      render();
+    }).catch(function (err) {
+      alert("Couldn't open that quote - " + err.message);
+    });
+  }
+
+  function deleteQuoteById(id, itemEl) {
+    if (!confirm("Delete this saved quote? This can't be undone.")) return;
+    apiRequest("DELETE", "/quotes/" + id).then(function () {
+      itemEl.remove();
+      if (state.id === id) {
+        // The open quote was just deleted server-side - drop its id so a
+        // future Save creates a new record instead of PUTting to nothing.
+        state.id = null;
+        saveState();
+      }
+    }).catch(function (err) {
+      alert("Couldn't delete that quote - " + err.message);
+    });
+  }
+
   function bindTopbar() {
     document.getElementById("printBtn").addEventListener("click", function () {
       window.print();
     });
 
     document.getElementById("exportCsvBtn").addEventListener("click", exportCsv);
+    document.getElementById("saveBtn").addEventListener("click", saveQuote);
+    document.getElementById("editBtn").addEventListener("click", function () {
+      state.viewMode = "edit";
+      saveState();
+      render();
+    });
+
+    document.getElementById("loadQuotesBtn").addEventListener("click", openLoadModal);
+    document.getElementById("loadModalClose").addEventListener("click", closeLoadModal);
+    document.getElementById("loadModal").addEventListener("click", function (e) {
+      if (e.target.id === "loadModal") closeLoadModal();
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") closeLoadModal();
+    });
 
     document.getElementById("newQuoteBtn").addEventListener("click", function () {
       if (!confirm("Start a new quote? This clears the current quote details and line items.")) return;
-      state = {
-        meta: { customer: "", manager: "", opportunity: "", preparedBy: "", verifiedBy: "", date: todayISO() },
-        lines: [newLine()]
-      };
+      state = blankQuote();
       saveState();
       render();
     });

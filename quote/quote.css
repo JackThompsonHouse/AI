@@ -308,6 +308,70 @@ body {
 .summary-table td:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
 .summary-table tfoot td { font-weight: 800; border-top: 2px solid var(--text); border-bottom: none; }
 
+/* the line-item summary table has more text columns than the role
+   breakdown, so only the last two (days, sell total) stay right-aligned */
+.line-summary-table td:nth-child(1),
+.line-summary-table td:nth-child(2),
+.line-summary-table td:nth-child(3),
+.line-summary-table td:nth-child(4) {
+  text-align: left;
+  font-variant-numeric: normal;
+}
+
+.btn[disabled] { opacity: 0.6; cursor: default; }
+
+/* "My quotes" modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(27, 31, 39, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 100;
+}
+.modal-box {
+  background: var(--panel);
+  border-radius: 12px;
+  border-top: 4px solid var(--brand-cyan);
+  width: 100%;
+  max-width: 640px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-header h2 { margin: 0; font-size: 16px; }
+.modal-body {
+  padding: 12px 20px 20px;
+  overflow-y: auto;
+}
+.modal-status { color: var(--text-dim); font-size: 13px; text-align: center; padding: 20px 0; }
+
+.quote-list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.quote-list-item:last-child { border-bottom: none; }
+.quote-list-main { flex: 1 1 auto; min-width: 0; }
+.quote-list-title { font-weight: 700; font-size: 14px; }
+.quote-list-sub { font-size: 12px; color: var(--text-faint); margin-top: 2px; }
+.quote-list-figures { text-align: right; flex: 0 0 auto; }
+.quote-list-sell { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--accent); }
+.quote-list-days { font-size: 12px; color: var(--text-faint); }
+.quote-list-actions { display: flex; gap: 6px; flex: 0 0 auto; }
+
 .confidential-note {
   margin-top: 24px;
   font-size: 12px;
@@ -334,4 +398,5 @@ body {
   .line-card { border: 1px solid #ccc !important; border-left: 1px solid #ccc !important; break-inside: avoid; }
   .stat-tile { background: #fff !important; border: 1px solid #ccc; }
   .brand-bar { display: none !important; }
+  .modal-overlay { display: none !important; }
 }
