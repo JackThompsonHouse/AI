@@ -504,6 +504,14 @@
       opts.headers["Content-Type"] = "application/json";
       opts.body = JSON.stringify(body);
     }
+    // Backstop against the request just hanging (e.g. the api container is
+    // down and something upstream isn't enforcing its own timeout) - without
+    // this a broken backend leaves "Loading..." on screen indefinitely
+    // instead of surfacing a clear error.
+    var controller = new AbortController();
+    var timeout = setTimeout(function () { controller.abort(); }, 12000);
+    opts.signal = controller.signal;
+
     return fetch(API_BASE + path, opts).then(function (res) {
       if (!res.ok) {
         return res.json().catch(function () { return {}; }).then(function (err) {
@@ -512,6 +520,13 @@
       }
       if (res.status === 204) return null;
       return res.json();
+    }).catch(function (err) {
+      if (err.name === "AbortError") {
+        throw new Error("no response from the server - it may be down");
+      }
+      throw err;
+    }).finally(function () {
+      clearTimeout(timeout);
     });
   }
 
