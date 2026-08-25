@@ -51,6 +51,20 @@ body {
   gap: 16px;
   flex-wrap: wrap;
 }
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.brand-logo {
+  height: 32px;
+  width: auto;
+  display: block;
+}
+.brand-text {
+  display: flex;
+  flex-direction: column;
+}
 .brand-title {
   font-weight: 700;
   font-size: 18px;
