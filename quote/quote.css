@@ -331,6 +331,11 @@ body {
   padding: 20px;
   z-index: 100;
 }
+/* An author-stylesheet display rule always beats the browser's built-in
+   [hidden]{display:none}, regardless of specificity - so without this,
+   the modal stayed visible (and unclosable) no matter what the hidden
+   attribute/property was set to. */
+.modal-overlay[hidden] { display: none; }
 .modal-box {
   background: var(--panel);
   border-radius: 12px;
