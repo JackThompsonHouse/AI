@@ -201,11 +201,21 @@ body {
 
 .line-field-role { margin-bottom: 6px; }
 
+/* Days is a 1-3 digit number, so it sits outside the responsive grid in its
+   own fixed-width slot rather than stretching to match the text fields. */
+.line-fields-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: flex-end;
+}
 .line-fields {
+  flex: 1 1 320px;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 6px 10px;
 }
+.line-field-days { flex: 0 0 80px; }
 .line-field { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .line-field span {
   font-size: 11px;
@@ -225,6 +235,7 @@ body {
   width: 100%;
 }
 .line-field-days input { text-align: right; }
+.line-field-title { margin-top: 6px; }
 .line-field-desc { margin-top: 6px; }
 
 .line-computed {

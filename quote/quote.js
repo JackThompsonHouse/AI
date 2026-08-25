@@ -41,10 +41,8 @@
     "Service Delivery", "Other"
   ];
 
-  // v2: fixes a bug where the phase dropdown stored its numeric option index
-  // instead of the phase name, corrupting saved quotes. Bumped so anyone who
-  // hit that bug starts from a clean slate rather than re-loading bad data.
-  var STORAGE_KEY = "ps-quote-builder-v2";
+  // v3: split the single "description" field into "title" + "description".
+  var STORAGE_KEY = "ps-quote-builder-v3";
 
   var nextLineId = 1;
 
@@ -57,6 +55,7 @@
     return {
       id: nextLineId++,
       phase: PHASES[0],
+      title: "",
       description: "",
       roleIndex: 0,
       serviceType: SERVICE_TYPES[0],
@@ -184,7 +183,8 @@
       var serviceTypeSel = el("select", { "data-field": "serviceType" }, optionListByValue(SERVICE_TYPES, line.serviceType));
       var coverageSel = el("select", { "data-field": "coverageIndex" }, optionList(COVERAGE, line.coverageIndex));
       var daysInput = el("input", { type: "number", min: "0", step: "0.5", "data-field": "days", value: line.days });
-      var descInput = el("input", { type: "text", "data-field": "description", placeholder: "e.g. Discovery workshop", value: line.description });
+      var titleInput = el("input", { type: "text", "data-field": "title", placeholder: "e.g. Discovery workshop", value: line.title });
+      var descInput = el("input", { type: "text", "data-field": "description", placeholder: "Optional notes / rationale", value: line.description });
 
       var removeBtn = el("button", { type: "button", class: "btn-remove", "aria-label": "Remove line" });
       removeBtn.textContent = "×";
@@ -199,14 +199,20 @@
       // in the fields grid below.
       var roleField = field("Service grade", "line-field-role", roleSel);
 
-      var fieldsGrid = el("div", { class: "line-fields" }, [
-        field("Phase", "line-field-phase", phaseSel),
-        field("Service type", "line-field-servicetype", serviceTypeSel),
-        field("Coverage", "line-field-coverage", coverageSel),
+      // Days is just a small number, so it sits outside the responsive grid
+      // (which would otherwise stretch it to match the widest text field)
+      // in its own fixed-width slot alongside it.
+      var fieldsGrid = el("div", { class: "line-fields-row" }, [
+        el("div", { class: "line-fields" }, [
+          field("Phase", "line-field-phase", phaseSel),
+          field("Service type", "line-field-servicetype", serviceTypeSel),
+          field("Coverage", "line-field-coverage", coverageSel)
+        ]),
         field("Days", "line-field-days", daysInput)
       ]);
 
-      var descField = field("Work package description", "line-field-desc", descInput);
+      var titleField = field("Title", "line-field-title", titleInput);
+      var descField = field("Description", "line-field-desc", descInput);
 
       var costDay = statChip("Cost / day", "cell-costday");
       var costTotal = statChip("Cost total", "cell-costtotal");
@@ -227,6 +233,7 @@
       card.appendChild(top);
       card.appendChild(roleField);
       card.appendChild(fieldsGrid);
+      card.appendChild(titleField);
       card.appendChild(descField);
       card.appendChild(computed);
 
@@ -386,12 +393,13 @@
     csv += csvRow(["Date", state.meta.date]);
     csv += "\r\n";
 
-    csv += csvRow(["Phase", "Work package description", "Service grade", "Service type", "Coverage", "Days", "Cost/day", "Cost total", "Sell/day", "Sell total", "Margin"]);
+    csv += csvRow(["Phase", "Title", "Description", "Service grade", "Service type", "Coverage", "Days", "Cost/day", "Cost total", "Sell/day", "Sell total", "Margin"]);
     state.lines.forEach(function (line) {
       var role = ROLES[line.roleIndex] || ROLES[0];
       var fig = lineFigures(line);
       csv += csvRow([
         line.phase,
+        line.title,
         line.description,
         role.name,
         line.serviceType,
@@ -415,7 +423,7 @@
     var margin = totals.sell - totals.cost;
 
     csv += "\r\n";
-    csv += csvRow(["Total", "", "", "", "", totals.days, "", totals.cost.toFixed(2), "", totals.sell.toFixed(2), margin.toFixed(2)]);
+    csv += csvRow(["Total", "", "", "", "", "", totals.days, "", totals.cost.toFixed(2), "", totals.sell.toFixed(2), margin.toFixed(2)]);
     return csv;
   }
 
