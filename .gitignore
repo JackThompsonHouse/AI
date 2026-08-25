@@ -3,3 +3,6 @@ Thumbs.db
 *.log
 node_modules/
 .env
+
+# Source pricing workbook - contains internal cost/margin data, never commit
+*.xlsx

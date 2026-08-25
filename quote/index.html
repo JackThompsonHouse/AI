@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PS Quote Builder</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="quote.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-title">PS Quote Builder</span>
+      <span class="brand-sub">Roc Technologies &middot; Internal use only</span>
+    </div>
+    <div class="topbar-actions">
+      <button type="button" class="btn btn-ghost" id="newQuoteBtn">New quote</button>
+      <button type="button" class="btn btn-primary" id="printBtn">Print / Save PDF</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="panel" id="metaPanel">
+    <h2 class="panel-title">Quote details</h2>
+    <div class="meta-grid">
+      <label class="field">
+        <span>Customer name</span>
+        <input type="text" id="metaCustomer" placeholder="Enter customer name">
+      </label>
+      <label class="field">
+        <span>Client / account manager</span>
+        <input type="text" id="metaManager" placeholder="Enter account manager name">
+      </label>
+      <label class="field">
+        <span>Opportunity reference</span>
+        <input type="text" id="metaOpportunity" placeholder="Proposal / SOW title">
+      </label>
+      <label class="field">
+        <span>Prepared by</span>
+        <input type="text" id="metaPreparedBy" placeholder="Your name">
+      </label>
+      <label class="field">
+        <span>Verified by</span>
+        <input type="text" id="metaVerifiedBy" placeholder="Verifier name">
+      </label>
+      <label class="field">
+        <span>Date</span>
+        <input type="date" id="metaDate">
+      </label>
+    </div>
+  </section>
+
+  <section class="panel" id="linesPanel">
+    <h2 class="panel-title">Description of services</h2>
+    <div class="table-scroll">
+      <table class="lines-table" id="linesTable">
+        <thead>
+          <tr>
+            <th class="col-phase">Phase</th>
+            <th class="col-desc">Work package description</th>
+            <th class="col-role">Service grade</th>
+            <th class="col-daytype">Coverage</th>
+            <th class="col-days">Days</th>
+            <th class="col-money">Cost / day</th>
+            <th class="col-money">Cost total</th>
+            <th class="col-money">Sell / day</th>
+            <th class="col-money">Sell total</th>
+            <th class="col-money">Margin</th>
+            <th class="col-remove"></th>
+          </tr>
+        </thead>
+        <tbody id="linesBody"></tbody>
+      </table>
+    </div>
+    <button type="button" class="btn btn-ghost" id="addLineBtn">+ Add line item</button>
+  </section>
+
+  <section class="panel" id="summaryPanel">
+    <h2 class="panel-title">Summary</h2>
+    <div class="stat-row" id="grandStats"></div>
+
+    <h3 class="subhead">By service grade</h3>
+    <div class="table-scroll">
+      <table class="summary-table" id="roleSummaryTable">
+        <thead>
+          <tr>
+            <th>Service grade</th>
+            <th>Days</th>
+            <th>Cost</th>
+            <th>Sell</th>
+            <th>Margin</th>
+            <th>% Margin</th>
+          </tr>
+        </thead>
+        <tbody id="roleSummaryBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <p class="confidential-note">Contains Roc Technologies commercial rate data &mdash; internal use only, do not share externally.</p>
+
+</main>
+
+<script src="quote.js"></script>
+</body>
+</html>
