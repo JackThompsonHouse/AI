@@ -176,20 +176,20 @@ body {
 .line-cards {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
 }
 .line-card {
   border: 1px solid var(--border);
   border-left: 4px solid var(--brand-cyan);
-  border-radius: 10px;
-  padding: 14px 16px;
+  border-radius: 8px;
+  padding: 10px 12px;
   background: var(--bg);
 }
 .line-card-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 .line-card-index {
   font-size: 11px;
@@ -199,14 +199,14 @@ body {
   color: var(--text-faint);
 }
 
-.line-field-role { margin-bottom: 10px; }
+.line-field-role { margin-bottom: 6px; }
 
 .line-fields {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 10px 12px;
+  gap: 6px 10px;
 }
-.line-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.line-field { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .line-field span {
   font-size: 11px;
   text-transform: uppercase;
@@ -218,24 +218,24 @@ body {
 .line-field input {
   font-family: inherit;
   font-size: 13px;
-  padding: 7px 8px;
+  padding: 5px 7px;
   border: 1px solid var(--border);
   border-radius: 6px;
   background: #fff;
   width: 100%;
 }
 .line-field-days input { text-align: right; }
-.line-field-desc { margin-top: 12px; }
+.line-field-desc { margin-top: 6px; }
 
 .line-computed {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 20px;
-  margin-top: 14px;
-  padding-top: 12px;
+  gap: 4px 16px;
+  margin-top: 8px;
+  padding-top: 7px;
   border-top: 1px dashed var(--border);
 }
-.stat-chip { display: flex; flex-direction: column; gap: 2px; }
+.stat-chip { display: flex; flex-direction: column; gap: 1px; }
 .stat-chip span {
   font-size: 10px;
   text-transform: uppercase;
@@ -244,13 +244,13 @@ body {
   font-weight: 700;
 }
 .stat-chip b {
-  font-size: 14px;
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
   font-weight: 700;
 }
 .margin-negative { color: var(--danger); }
 
-#addLineBtn { margin-top: 14px; }
+#addLineBtn { margin-top: 10px; }
 
 /* summary table */
 .table-scroll { overflow-x: auto; }
