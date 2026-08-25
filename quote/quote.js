@@ -152,56 +152,99 @@
     document.getElementById("metaDate").value = state.meta.date;
   }
 
+  function field(labelText, className, inputEl) {
+    return el("label", { class: "line-field" + (className ? " " + className : "") }, [
+      el("span", { text: labelText }),
+      inputEl
+    ]);
+  }
+
+  function statChip(labelText, className) {
+    var valueEl = el("b", { class: className, text: money(0) });
+    var chip = el("div", { class: "stat-chip" }, [
+      el("span", { text: labelText }),
+      valueEl
+    ]);
+    return { chip: chip, valueEl: valueEl };
+  }
+
   function renderLines() {
     var body = document.getElementById("linesBody");
     body.innerHTML = "";
 
-    state.lines.forEach(function (line) {
+    state.lines.forEach(function (line, index) {
       var fig = lineFigures(line);
-      var tr = document.createElement("tr");
-      tr.dataset.id = line.id;
+      var card = document.createElement("div");
+      card.className = "line-card";
+      card.dataset.id = line.id;
 
       var phaseSel = el("select", { "data-field": "phase" }, optionListByValue(PHASES, line.phase));
-      var descInput = el("input", { type: "text", "data-field": "description", placeholder: "e.g. Discovery workshop", value: line.description });
       var roleSel = el("select", { "data-field": "roleIndex" }, optionList(ROLES.map(function (r) { return r.name; }), line.roleIndex));
       var serviceTypeSel = el("select", { "data-field": "serviceType" }, optionListByValue(SERVICE_TYPES, line.serviceType));
       var coverageSel = el("select", { "data-field": "coverageIndex" }, optionList(COVERAGE, line.coverageIndex));
       var daysInput = el("input", { type: "number", min: "0", step: "0.5", "data-field": "days", value: line.days });
-
-      tr.appendChild(el("td", { class: "col-phase" }, [phaseSel]));
-      tr.appendChild(el("td", { class: "col-desc" }, [descInput]));
-      tr.appendChild(el("td", { class: "col-role" }, [roleSel]));
-      tr.appendChild(el("td", { class: "col-servicetype" }, [serviceTypeSel]));
-      tr.appendChild(el("td", { class: "col-daytype" }, [coverageSel]));
-      tr.appendChild(el("td", { class: "col-days" }, [daysInput]));
-      tr.appendChild(el("td", { class: "col-money computed cell-costday", text: money(fig.costDay) }));
-      tr.appendChild(el("td", { class: "col-money computed cell-costtotal", text: money(fig.costTotal) }));
-      tr.appendChild(el("td", { class: "col-money computed cell-sellday", text: money(fig.sellDay) }));
-      tr.appendChild(el("td", { class: "col-money computed cell-selltotal", text: money(fig.sellTotal) }));
-
-      var marginCell = el("td", { class: "col-money computed cell-margin" + (fig.margin < 0 ? " margin-negative" : ""), text: money(fig.margin) });
-      tr.appendChild(marginCell);
+      var descInput = el("input", { type: "text", "data-field": "description", placeholder: "e.g. Discovery workshop", value: line.description });
 
       var removeBtn = el("button", { type: "button", class: "btn-remove", "aria-label": "Remove line" });
       removeBtn.textContent = "×";
-      tr.appendChild(el("td", { class: "col-remove" }, [removeBtn]));
 
-      body.appendChild(tr);
+      var top = el("div", { class: "line-card-top" }, [
+        el("span", { class: "line-card-index", text: "Line " + (index + 1) }),
+        removeBtn
+      ]);
+
+      // Role names can run long (e.g. "Field Service Engineer (Non-Centrex)"),
+      // so it gets its own full-width row rather than competing for space
+      // in the fields grid below.
+      var roleField = field("Service grade", "line-field-role", roleSel);
+
+      var fieldsGrid = el("div", { class: "line-fields" }, [
+        field("Phase", "line-field-phase", phaseSel),
+        field("Service type", "line-field-servicetype", serviceTypeSel),
+        field("Coverage", "line-field-coverage", coverageSel),
+        field("Days", "line-field-days", daysInput)
+      ]);
+
+      var descField = field("Work package description", "line-field-desc", descInput);
+
+      var costDay = statChip("Cost / day", "cell-costday");
+      var costTotal = statChip("Cost total", "cell-costtotal");
+      var sellDay = statChip("Sell / day", "cell-sellday");
+      var sellTotal = statChip("Sell total", "cell-selltotal");
+      var margin = statChip("Margin", "cell-margin");
+      costDay.valueEl.textContent = money(fig.costDay);
+      costTotal.valueEl.textContent = money(fig.costTotal);
+      sellDay.valueEl.textContent = money(fig.sellDay);
+      sellTotal.valueEl.textContent = money(fig.sellTotal);
+      margin.valueEl.textContent = money(fig.margin);
+      margin.valueEl.classList.toggle("margin-negative", fig.margin < 0);
+
+      var computed = el("div", { class: "line-computed" }, [
+        costDay.chip, costTotal.chip, sellDay.chip, sellTotal.chip, margin.chip
+      ]);
+
+      card.appendChild(top);
+      card.appendChild(roleField);
+      card.appendChild(fieldsGrid);
+      card.appendChild(descField);
+      card.appendChild(computed);
+
+      body.appendChild(card);
     });
   }
 
-  // Updates only the computed money cells for one row, without touching the
+  // Updates only the computed stat values for one card, without touching the
   // input elements, so an in-progress edit (e.g. typing in the days field)
   // doesn't lose focus/cursor position on every keystroke.
-  function updateRowComputed(tr, line) {
+  function updateRowComputed(card, line) {
     var fig = lineFigures(line);
-    tr.querySelector(".cell-costday").textContent = money(fig.costDay);
-    tr.querySelector(".cell-costtotal").textContent = money(fig.costTotal);
-    tr.querySelector(".cell-sellday").textContent = money(fig.sellDay);
-    tr.querySelector(".cell-selltotal").textContent = money(fig.sellTotal);
-    var marginCell = tr.querySelector(".cell-margin");
-    marginCell.textContent = money(fig.margin);
-    marginCell.classList.toggle("margin-negative", fig.margin < 0);
+    card.querySelector(".cell-costday").textContent = money(fig.costDay);
+    card.querySelector(".cell-costtotal").textContent = money(fig.costTotal);
+    card.querySelector(".cell-sellday").textContent = money(fig.sellDay);
+    card.querySelector(".cell-selltotal").textContent = money(fig.sellTotal);
+    var marginEl = card.querySelector(".cell-margin");
+    marginEl.textContent = money(fig.margin);
+    marginEl.classList.toggle("margin-negative", fig.margin < 0);
   }
 
   function renderSummary() {
@@ -285,31 +328,31 @@
     var body = document.getElementById("linesBody");
 
     body.addEventListener("input", function (e) {
-      var field = e.target.getAttribute("data-field");
-      if (!field) return;
-      var tr = e.target.closest("tr");
-      var line = state.lines.find(function (l) { return String(l.id) === tr.dataset.id; });
+      var fieldName = e.target.getAttribute("data-field");
+      if (!fieldName) return;
+      var card = e.target.closest(".line-card");
+      var line = state.lines.find(function (l) { return String(l.id) === card.dataset.id; });
       if (!line) return;
 
-      if (field === "roleIndex" || field === "coverageIndex") {
-        line[field] = Number(e.target.value);
-      } else if (field === "days") {
+      if (fieldName === "roleIndex" || fieldName === "coverageIndex") {
+        line[fieldName] = Number(e.target.value);
+      } else if (fieldName === "days") {
         line.days = Math.max(0, Number(e.target.value) || 0);
       } else {
-        line[field] = e.target.value;
+        line[fieldName] = e.target.value;
       }
 
       saveState();
-      if (field === "roleIndex" || field === "coverageIndex" || field === "days") {
-        updateRowComputed(tr, line);
+      if (fieldName === "roleIndex" || fieldName === "coverageIndex" || fieldName === "days") {
+        updateRowComputed(card, line);
       }
       renderSummary();
     });
 
     body.addEventListener("click", function (e) {
       if (!e.target.classList.contains("btn-remove")) return;
-      var tr = e.target.closest("tr");
-      state.lines = state.lines.filter(function (l) { return String(l.id) !== tr.dataset.id; });
+      var card = e.target.closest(".line-card");
+      state.lines = state.lines.filter(function (l) { return String(l.id) !== card.dataset.id; });
       if (state.lines.length === 0) state.lines.push(newLine());
       saveState();
       render();
