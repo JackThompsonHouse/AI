@@ -9,11 +9,19 @@
   --accent-dim: #E8EEFF;
   --danger: #C6383F;
   --danger-dim: #FBEAEB;
-  --good: #1E8E5A;
-  --good-dim: #E8F6EF;
   --radius: 8px;
   --font: 'Segoe UI', system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
   --font-mono: 'Consolas', 'SFMono-Regular', Menlo, monospace;
+
+  /* Roc Technologies brand accents, sampled from roctechnologies.com's own
+     theme CSS - used here for decorative colour only (gradient bar, stat
+     tiles, background wash), never for body text, to keep everything
+     legible against a white panel. */
+  --brand-cyan: #64D6FB;
+  --brand-mint: #5DFAE5;
+  --brand-indigo: #7D7FFF;
+  --brand-pink: #D992F0;
+  --brand-orange: #FF8B28;
 }
 
 * { box-sizing: border-box; }
@@ -21,10 +29,14 @@
 body {
   margin: 0;
   font-family: var(--font);
-  background: var(--bg);
   color: var(--text);
   font-size: 14px;
   line-height: 1.4;
+  background:
+    radial-gradient(1100px 550px at 12% -8%, rgba(100, 214, 251, 0.16), transparent 60%),
+    radial-gradient(900px 480px at 100% 0%, rgba(217, 146, 240, 0.13), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
 }
 
 .wrap {
@@ -40,6 +52,14 @@ body {
   z-index: 10;
   background: var(--panel);
   border-bottom: 1px solid var(--border);
+}
+.brand-bar {
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--brand-cyan), var(--brand-mint), var(--brand-indigo),
+    var(--brand-pink), var(--brand-orange)
+  );
 }
 .topbar-inner {
   max-width: 1320px;
@@ -160,6 +180,7 @@ body {
 }
 .line-card {
   border: 1px solid var(--border);
+  border-left: 4px solid var(--brand-cyan);
   border-radius: 10px;
   padding: 14px 16px;
   background: var(--bg);
@@ -259,7 +280,13 @@ body {
   margin-top: 4px;
   font-variant-numeric: tabular-nums;
 }
-.stat-tile.stat-sell { background: var(--good-dim); }
+/* Total days / cost / sell / margin / % margin - each gets its own brand
+   accent tint so the summary row reads as a set at a glance. */
+.stat-row .stat-tile:nth-child(1) { background: rgba(125, 127, 255, 0.14); }
+.stat-row .stat-tile:nth-child(2) { background: rgba(255, 139, 40, 0.14); }
+.stat-tile.stat-sell { background: rgba(93, 250, 229, 0.22); }
+.stat-row .stat-tile:nth-child(4) { background: rgba(217, 146, 240, 0.18); }
+.stat-row .stat-tile:nth-child(5) { background: rgba(100, 214, 251, 0.20); }
 
 .summary-table th, .summary-table td {
   padding: 7px 8px;
@@ -293,6 +320,7 @@ body {
     padding: 2px 0;
     background: transparent;
   }
-  .line-card { border: 1px solid #ccc; break-inside: avoid; }
-  .stat-tile { background: #fff; border: 1px solid #ccc; }
+  .line-card { border: 1px solid #ccc !important; border-left: 1px solid #ccc !important; break-inside: avoid; }
+  .stat-tile { background: #fff !important; border: 1px solid #ccc; }
+  .brand-bar { display: none !important; }
 }
