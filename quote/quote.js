@@ -507,9 +507,11 @@
     // Backstop against the request just hanging (e.g. the api container is
     // down and something upstream isn't enforcing its own timeout) - without
     // this a broken backend leaves "Loading..." on screen indefinitely
-    // instead of surfacing a clear error.
+    // instead of surfacing a clear error. Set comfortably longer than
+    // nginx's own proxy/resolver timeouts (all <=5s) so nginx's real error
+    // reason gets back to us instead of being masked by this firing first.
     var controller = new AbortController();
-    var timeout = setTimeout(function () { controller.abort(); }, 12000);
+    var timeout = setTimeout(function () { controller.abort(); }, 20000);
     opts.signal = controller.signal;
 
     return fetch(API_BASE + path, opts).then(function (res) {
