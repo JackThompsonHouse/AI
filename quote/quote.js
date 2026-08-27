@@ -664,29 +664,6 @@
     });
   }
 
-  // Copies whatever quote is currently loaded (editing or viewing in
-  // summary) into a fresh, unsaved draft - same meta/lines, but no server
-  // id, so the next Save creates a new record rather than overwriting the
-  // one this was copied from.
-  function duplicateQuote() {
-    var newLines = state.lines.map(duplicateLine);
-    state = {
-      id: null,
-      viewMode: "edit",
-      meta: {
-        customer: state.meta.customer,
-        manager: state.meta.manager,
-        opportunity: state.meta.opportunity,
-        preparedBy: state.meta.preparedBy,
-        verifiedBy: state.meta.verifiedBy,
-        date: todayISO()
-      },
-      lines: newLines
-    };
-    saveState();
-    render();
-  }
-
   function bindTopbar() {
     document.getElementById("printBtn").addEventListener("click", function () {
       window.print();
@@ -694,7 +671,6 @@
 
     document.getElementById("exportCsvBtn").addEventListener("click", exportCsv);
     document.getElementById("saveBtn").addEventListener("click", saveQuote);
-    document.getElementById("duplicateQuoteBtn").addEventListener("click", duplicateQuote);
     document.getElementById("editBtn").addEventListener("click", function () {
       state.viewMode = "edit";
       saveState();
