@@ -23,7 +23,7 @@ auth/htpasswd   Basic-auth credentials protecting /quote/ and /quote/api/
 Dockerfile      nginx:alpine image serving the static files (the "web" service)
 nginx.conf      nginx server config (gzip, cache headers, IPv4 + IPv6 listeners,
                  basic auth + API reverse proxy on /quote/)
-docker-compose.yml   Two services - web (nginx) and api (Node/SQLite) - plus
+docker-compose.yaml   Two services - web (nginx) and api (Node/SQLite) - plus
                  a named volume so saved quotes survive redeploys
 ```
 
@@ -75,7 +75,7 @@ echo "New password: $NEWPASS"
 
 **Data persistence**: saved quotes live in a SQLite file at `/data/quotes.db`
 inside the `api` container, backed by the `quotes-data` named volume in
-`docker-compose.yml`. If that volume isn't preserved across deploys (e.g. a
+`docker-compose.yaml`. If that volume isn't preserved across deploys (e.g. a
 Coolify configuration that recreates volumes from scratch), saved quotes
 will be lost on redeploy — worth confirming the volume persists after your
 first deploy by saving a test quote, redeploying, and checking it's still
@@ -110,13 +110,13 @@ docker compose up --build
 
 This app now has two services (`web` + `api`) and a named volume, so it
 **must** be deployed via the **Docker Compose** build pack pointing at
-`docker-compose.yml` — the plain Dockerfile build pack only builds `web` and
+`docker-compose.yaml` — the plain Dockerfile build pack only builds `web` and
 won't start the API backend at all, breaking Save/My quotes.
 
 1. Push this repository to your git remote (already configured as `origin`).
 2. In Coolify, create a new **Resource → Application** and point it at this
    repository/branch.
-3. Choose the **Docker Compose** build pack, pointing at `docker-compose.yml`
+3. Choose the **Docker Compose** build pack, pointing at `docker-compose.yaml`
    at the repo root. If this resource was previously set up on the plain
    **Dockerfile** build pack, switch it to Docker Compose — otherwise the
    `api` service and `quotes-data` volume are silently ignored.
