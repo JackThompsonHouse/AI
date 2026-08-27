@@ -309,13 +309,20 @@ body {
 .summary-table tfoot td { font-weight: 800; border-top: 2px solid var(--text); border-bottom: none; }
 
 /* the line-item summary table has more text columns than the role
-   breakdown, so only the last two (days, sell total) stay right-aligned */
+   breakdown, so only the last two (days, sell total) differ from the
+   base right-alignment - those are centered instead */
 .line-summary-table td:nth-child(1),
 .line-summary-table td:nth-child(2),
 .line-summary-table td:nth-child(3),
 .line-summary-table td:nth-child(4) {
   text-align: left;
   font-variant-numeric: normal;
+}
+.line-summary-table td:nth-child(5),
+.line-summary-table td:nth-child(6),
+.line-summary-table th:nth-child(5),
+.line-summary-table th:nth-child(6) {
+  text-align: center;
 }
 
 .btn[disabled] { opacity: 0.6; cursor: default; }
