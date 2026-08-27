@@ -191,6 +191,11 @@ body {
   justify-content: space-between;
   margin-bottom: 6px;
 }
+.line-card-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 .line-card-index {
   font-size: 11px;
   text-transform: uppercase;
@@ -399,7 +404,7 @@ body {
 /* print */
 @media print {
   body { background: #fff; font-size: 11px; }
-  .topbar, #addLineBtn, .btn-remove, .confidential-note { display: none !important; }
+  .topbar, #addLineBtn, .btn-remove, .btn-duplicate-line, .confidential-note { display: none !important; }
   .panel { border: none; padding: 0; margin-top: 18px; box-shadow: none; }
   .wrap { padding: 0; max-width: 100%; }
   .line-field select, .line-field input, .field input {

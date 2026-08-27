@@ -64,6 +64,13 @@
     };
   }
 
+  function duplicateLine(line) {
+    var copy = {};
+    Object.keys(line).forEach(function (key) { copy[key] = line[key]; });
+    copy.id = nextLineId++;
+    return copy;
+  }
+
   function blankQuote() {
     return {
       id: null,
@@ -203,12 +210,15 @@
       var titleInput = el("input", { type: "text", "data-field": "title", placeholder: "e.g. Discovery workshop", value: line.title });
       var descInput = el("input", { type: "text", "data-field": "description", placeholder: "Optional notes / rationale", value: line.description });
 
+      var duplicateBtn = el("button", { type: "button", class: "btn btn-ghost btn-small btn-duplicate-line", "aria-label": "Duplicate line" });
+      duplicateBtn.textContent = "Duplicate";
+
       var removeBtn = el("button", { type: "button", class: "btn-remove", "aria-label": "Remove line" });
       removeBtn.textContent = "×";
 
       var top = el("div", { class: "line-card-top" }, [
         el("span", { class: "line-card-index", text: "Line " + (index + 1) }),
-        removeBtn
+        el("div", { class: "line-card-top-actions" }, [duplicateBtn, removeBtn])
       ]);
 
       // Role names can run long (e.g. "Field Service Engineer (Non-Centrex)"),
@@ -417,12 +427,23 @@
     });
 
     body.addEventListener("click", function (e) {
-      if (!e.target.classList.contains("btn-remove")) return;
-      var card = e.target.closest(".line-card");
-      state.lines = state.lines.filter(function (l) { return String(l.id) !== card.dataset.id; });
-      if (state.lines.length === 0) state.lines.push(newLine());
-      saveState();
-      render();
+      if (e.target.classList.contains("btn-remove")) {
+        var removeCard = e.target.closest(".line-card");
+        state.lines = state.lines.filter(function (l) { return String(l.id) !== removeCard.dataset.id; });
+        if (state.lines.length === 0) state.lines.push(newLine());
+        saveState();
+        render();
+        return;
+      }
+
+      if (e.target.classList.contains("btn-duplicate-line")) {
+        var sourceCard = e.target.closest(".line-card");
+        var sourceIndex = state.lines.findIndex(function (l) { return String(l.id) === sourceCard.dataset.id; });
+        if (sourceIndex === -1) return;
+        state.lines.splice(sourceIndex + 1, 0, duplicateLine(state.lines[sourceIndex]));
+        saveState();
+        render();
+      }
     });
 
     document.getElementById("addLineBtn").addEventListener("click", function () {
@@ -643,6 +664,29 @@
     });
   }
 
+  // Copies whatever quote is currently loaded (editing or viewing in
+  // summary) into a fresh, unsaved draft - same meta/lines, but no server
+  // id, so the next Save creates a new record rather than overwriting the
+  // one this was copied from.
+  function duplicateQuote() {
+    var newLines = state.lines.map(duplicateLine);
+    state = {
+      id: null,
+      viewMode: "edit",
+      meta: {
+        customer: state.meta.customer,
+        manager: state.meta.manager,
+        opportunity: state.meta.opportunity,
+        preparedBy: state.meta.preparedBy,
+        verifiedBy: state.meta.verifiedBy,
+        date: todayISO()
+      },
+      lines: newLines
+    };
+    saveState();
+    render();
+  }
+
   function bindTopbar() {
     document.getElementById("printBtn").addEventListener("click", function () {
       window.print();
@@ -650,6 +694,7 @@
 
     document.getElementById("exportCsvBtn").addEventListener("click", exportCsv);
     document.getElementById("saveBtn").addEventListener("click", saveQuote);
+    document.getElementById("duplicateQuoteBtn").addEventListener("click", duplicateQuote);
     document.getElementById("editBtn").addEventListener("click", function () {
       state.viewMode = "edit";
       saveState();
