@@ -282,6 +282,7 @@ body {
   background: var(--accent-dim);
   border-radius: 10px;
   padding: 14px 16px;
+  text-align: center;
 }
 .stat-tile .stat-label {
   font-size: 11px;
@@ -310,12 +311,20 @@ body {
   text-align: left;
   font-size: 13px;
 }
-.summary-table td:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
+.summary-table th:not(:first-child),
+.summary-table td:not(:first-child) {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
 .summary-table tfoot td { font-weight: 800; border-top: 2px solid var(--text); border-bottom: none; }
 
 /* the line-item summary table has more text columns than the role
-   breakdown, so only the last two (days, sell total) differ from the
-   base right-alignment - those are centered instead */
+   breakdown, so most of them stay left-aligned - only days/sell total
+   (the actual numbers) are centered like the rest of the summary */
+.line-summary-table th:nth-child(1),
+.line-summary-table th:nth-child(2),
+.line-summary-table th:nth-child(3),
+.line-summary-table th:nth-child(4),
 .line-summary-table td:nth-child(1),
 .line-summary-table td:nth-child(2),
 .line-summary-table td:nth-child(3),
