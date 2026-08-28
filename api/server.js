@@ -96,17 +96,17 @@ app.get("/healthz", function (req, res) {
   res.status(200).send("ok");
 });
 
-app.get("/quote/api/quotes", function (req, res) {
+app.get("/psquote/api/quotes", function (req, res) {
   res.json(listStmt.all());
 });
 
-app.get("/quote/api/quotes/:id", function (req, res) {
+app.get("/psquote/api/quotes/:id", function (req, res) {
   var row = getStmt.get(req.params.id);
   if (!row) return res.status(404).json({ error: "not_found" });
   res.json(rowToQuote(row));
 });
 
-app.post("/quote/api/quotes", function (req, res) {
+app.post("/psquote/api/quotes", function (req, res) {
   var body = req.body || {};
   if (!body.meta || !Array.isArray(body.lines)) {
     return res.status(400).json({ error: "invalid_body" });
@@ -120,7 +120,7 @@ app.post("/quote/api/quotes", function (req, res) {
   res.status(201).json({ id: id, createdAt: ts, updatedAt: ts });
 });
 
-app.put("/quote/api/quotes/:id", function (req, res) {
+app.put("/psquote/api/quotes/:id", function (req, res) {
   var body = req.body || {};
   if (!body.meta || !Array.isArray(body.lines)) {
     return res.status(400).json({ error: "invalid_body" });
@@ -134,7 +134,7 @@ app.put("/quote/api/quotes/:id", function (req, res) {
   res.json({ id: req.params.id, updatedAt: ts });
 });
 
-app.delete("/quote/api/quotes/:id", function (req, res) {
+app.delete("/psquote/api/quotes/:id", function (req, res) {
   deleteStmt.run(req.params.id);
   res.status(204).end();
 });

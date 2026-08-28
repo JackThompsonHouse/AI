@@ -515,7 +515,7 @@
   }
 
   // --- Server persistence (save/load across devices) --------------------
-  // All requests go through nginx's /quote/api/ proxy, which sits behind
+  // All requests go through nginx's /psquote/api/ proxy, which sits behind
   // the same basic auth as the rest of the tool.
   var API_BASE = "api";
 

@@ -14,20 +14,20 @@ css/styles.css  Styles
 js/main.js      Mobile nav, scroll reveal, terminal typewriter, tab scroll-spy
 assets/         SVG mark / favicon (plus leftover images from a previous
                  version of this site — no longer referenced)
-quote/          Internal PS quote builder tool (see below), served at /quote/
+psquote/        Internal PS quote builder tool (see below), served at /psquote/
 api/            Backend for the quote builder - Node/Express + SQLite,
                  served internally (not exposed to the host), reached via
-                 nginx's /quote/api/ proxy
-auth/htpasswd   Basic-auth credentials protecting /quote/ and /quote/api/
+                 nginx's /psquote/api/ proxy
+auth/htpasswd   Basic-auth credentials protecting /psquote/ and /psquote/api/
                  (not in web root)
 Dockerfile      nginx:alpine image serving the static files (the "web" service)
 nginx.conf      nginx server config (gzip, cache headers, IPv4 + IPv6 listeners,
-                 basic auth + API reverse proxy on /quote/)
+                 basic auth + API reverse proxy on /psquote/)
 docker-compose.yaml   Two services - web (nginx) and api (Node/SQLite) - plus
                  a named volume so saved quotes survive redeploys
 ```
 
-## PS Quote Builder (`/quote/`)
+## PS Quote Builder (`/psquote/`)
 
 A multi-line professional-services quote calculator for internal use, ported
 from the FY27 PS Quote Excel workbook. Pick a service grade, coverage type
@@ -54,14 +54,14 @@ Express app; quotes are stored as JSON blobs in SQLite (`better-sqlite3`)
 rather than a normalized schema, since the frontend already owns the shape
 of a quote and there's no need to duplicate that server-side.
 
-**Access control**: `/quote/` and `/quote/api/` are both protected by HTTP
+**Access control**: `/psquote/` and `/psquote/api/` are both protected by HTTP
 basic auth (`auth_basic` in `nginx.conf`, credentials in `auth/htpasswd`)
 because they deal with Roc Technologies' real day rates, cost, and margin
 data. The `^~` prefix modifier on those nginx locations is deliberate — it
 makes sure `quote.js`/`quote.css` (which contain the rate table) and the API
 both stay behind auth, rather than being served unauthenticated by the
-static-asset caching rule further down the file. `/quote/api/` is listed
-before `/quote/` so nginx's longest-prefix match routes API calls to the
+static-asset caching rule further down the file. `/psquote/api/` is listed
+before `/psquote/` so nginx's longest-prefix match routes API calls to the
 backend instead of falling into the static file handler.
 
 Current login: username `psquote`. The password was generated randomly at
@@ -84,7 +84,7 @@ in **My quotes**.
 **Source data**: the original `.xlsx` workbook this was ported from contains
 full internal cost/margin detail across many roles and is intentionally
 gitignored (`*.xlsx`) — never commit it. Only the rates needed by the tool
-are embedded in `quote/quote.js`.
+are embedded in `psquote/quote.js`.
 
 ## Local preview
 
