@@ -308,12 +308,8 @@ body {
 .summary-table th, .summary-table td {
   padding: 7px 8px;
   border-bottom: 1px solid var(--border);
-  text-align: left;
-  font-size: 13px;
-}
-.summary-table th:not(:first-child),
-.summary-table td:not(:first-child) {
   text-align: center;
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
 }
 .summary-table tfoot td { font-weight: 800; border-top: 2px solid var(--text); border-bottom: none; }
