@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOW Generator</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="assets/roc-logo.svg">
+<link rel="stylesheet" href="sow.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <img class="brand-logo" src="assets/roc-logo.svg" alt="Roc Technologies" width="142" height="45">
+      <div class="brand-text">
+        <span class="brand-title">SOW Generator</span>
+        <span class="brand-sub">Internal use only</span>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button type="button" class="btn btn-ghost" id="startOverTopBtn">New SOW</button>
+      <button type="button" class="btn btn-ghost" id="listBtn">My SOWs</button>
+    </div>
+  </div>
+  <div class="brand-bar"></div>
+</header>
+
+<main class="wrap">
+
+  <!-- STEP 1: input -->
+  <section class="panel" id="inputPanel">
+    <h2 class="panel-title">Paste transcript or requirements</h2>
+    <p class="panel-hint">Paste a meeting transcript or a free-text list of requirements below. Claude will draft a first-pass Statement of Work you can review and correct before generating the document.</p>
+    <textarea id="transcriptInput" placeholder="Paste transcript or requirements here..."></textarea>
+    <div class="input-actions">
+      <button type="button" class="btn btn-primary" id="generateBtn">Generate</button>
+      <div class="status-line" id="extractStatus" hidden>
+        <div class="spinner"></div><span>Extracting details from transcript…</span>
+      </div>
+    </div>
+    <div class="error-box" id="extractError" hidden></div>
+  </section>
+
+  <!-- STEP 2: review -->
+  <section class="panel" id="reviewPanel" hidden>
+    <h2 class="panel-title">Review &amp; edit</h2>
+    <p class="panel-hint">Fields marked <span class="tbc-flag">TBC</span> weren't found in the transcript — fill them in or correct anything below before generating the document.</p>
+    <div id="reviewForm"></div>
+    <div class="input-actions">
+      <button type="button" class="btn btn-ghost" id="backToInputBtn">&larr; Back to transcript</button>
+      <button type="button" class="btn btn-primary" id="generateDocBtn">Generate document</button>
+      <div class="status-line" id="assembleStatus" hidden>
+        <div class="spinner"></div><span>Building document…</span>
+      </div>
+    </div>
+    <div class="error-box" id="assembleError" hidden></div>
+  </section>
+
+  <!-- STEP 3: result -->
+  <section class="panel" id="resultPanel" hidden>
+    <h2 class="panel-title">Document ready</h2>
+    <div class="result-box">
+      <div>
+        <div class="result-title" id="resultTitle">Proposal ready</div>
+        <div class="result-sub" id="resultSub"></div>
+      </div>
+      <a class="btn btn-primary" id="downloadLink" href="#">Download .docx</a>
+    </div>
+    <button type="button" class="btn btn-ghost" id="startOverBtn" style="margin-top:16px">Start a new SOW</button>
+  </section>
+
+  <p class="confidential-note">Roc Technologies internal tool — generated documents may contain commercially sensitive information.</p>
+
+</main>
+
+<div class="modal-overlay" id="listModal" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="listModalTitle">
+    <div class="modal-header">
+      <h2 id="listModalTitle">My SOWs</h2>
+      <button type="button" class="btn-remove" id="listModalClose" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body" id="listModalBody"></div>
+  </div>
+</div>
+
+<script src="sow.js"></script>
+</body>
+</html>

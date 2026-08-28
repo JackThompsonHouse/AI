@@ -7,7 +7,8 @@ RUN npm install --omit=dev
 FROM node:22-alpine
 WORKDIR /app
 COPY --from=build /app/node_modules ./node_modules
-COPY package.json server.js ./
+COPY package.json server.js sow-schema.js ./
+COPY templates/sow-template.docx ./templates/sow-template.docx
 
 ENV NODE_ENV=production
 ENV DB_PATH=/data/quotes.db

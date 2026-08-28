@@ -11,6 +11,8 @@ services:
   api:
     build: ./api
     restart: unless-stopped
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
     volumes:
       - quotes-data:/data
 

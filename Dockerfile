@@ -7,6 +7,7 @@ COPY css/ /usr/share/nginx/html/css/
 COPY js/ /usr/share/nginx/html/js/
 COPY assets/ /usr/share/nginx/html/assets/
 COPY psquote/ /usr/share/nginx/html/psquote/
+COPY sow-generator/ /usr/share/nginx/html/sow-generator/
 COPY auth/htpasswd /etc/nginx/auth/htpasswd
 
 EXPOSE 80
