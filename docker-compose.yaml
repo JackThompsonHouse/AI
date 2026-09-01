@@ -13,6 +13,7 @@ services:
     restart: unless-stopped
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - SOW_MOCK_EXTRACTION=${SOW_MOCK_EXTRACTION:-false}
     volumes:
       - quotes-data:/data
 

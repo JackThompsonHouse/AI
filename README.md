@@ -159,6 +159,16 @@ Coolify's compose UI asks) rather than relying on a committed `.env` file —
 Generate button will fail with a clear "ANTHROPIC_API_KEY is not
 configured" error rather than a confusing crash.
 
+**Testing without spending API credits**: set `SOW_MOCK_EXTRACTION=true`
+(same place as `ANTHROPIC_API_KEY`, no key required at all in this mode)
+to make the extract step return canned sample data instead of calling
+Anthropic. Everything downstream — the review form, document generation,
+download, My SOWs — runs for real, so this is a good way to confirm a
+fresh deploy actually works end-to-end before wiring in a real key. The
+review screen shows an orange "MOCK MODE" banner whenever this is active,
+so it's never mistaken for a genuine extraction. Turn it back off (or
+just unset it) once you're ready to test with real transcripts.
+
 **Generated documents storage**: `.docx` files land in
 `/data/sow-documents/` inside the `api` container (same `quotes-data`
 volume as the quote builder, different subfolder), with metadata (client,
@@ -211,7 +221,9 @@ won't start the API backend at all, breaking Save/My quotes.
    Variables** in Coolify (needed for the SOW Generator's extraction step -
    see "SOW Generator" above). Without it, `/sow-generator/` still loads
    fine, but clicking Generate returns a clear configuration error instead
-   of calling the model.
+   of calling the model. To verify the deploy works end-to-end before
+   spending any API credits, set `SOW_MOCK_EXTRACTION=true` instead (or as
+   well) - see "Testing without spending API credits" above.
 5. Confirm Coolify is persisting the `quotes-data` volume across deploys
    (most Coolify setups do this automatically for named volumes declared in
    compose, but it's worth checking after the first deploy - see "Data

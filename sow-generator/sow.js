@@ -298,6 +298,7 @@
     apiRequest("POST", "/extract", { transcript: transcript }).then(function (result) {
       state.data = result.data;
       state.sowId = null;
+      document.getElementById("mockBanner").hidden = !result.mock;
       renderReviewForm(state.data);
       showPanel("review");
     }).catch(function (err) {

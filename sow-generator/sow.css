@@ -118,6 +118,17 @@ body {
   font-size: 13px;
   color: var(--text-faint);
 }
+.mock-banner {
+  background: rgba(255, 139, 40, 0.16);
+  border: 1px solid var(--brand-orange);
+  color: #8A4B00;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin-bottom: 16px;
+}
 .subhead {
   margin: 24px 0 10px;
   font-size: 13px;
